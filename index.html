@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alessandro Tamburrino — Visual & Motion Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0a0a;
+    --bg-soft: #101215;
+    --surface: #15171a;
+    --surface-2: #191c1f;
+    --text: #f7f4ec;
+    --muted: #9a9ca1;
+    --muted-dim: #5a5c60;
+    --orange: #ff4519;
+    --orange-dim: #b23110;
+    --blue: #2151ff;
+    --blue-dim: #1638b0;
+    --yellow: #ffcc00;
+    --gold: #ff4519;
+    --gold-dim: #b23110;
+    --teal: #2151ff;
+    --teal-dim: #1638b0;
+    --line: rgba(247,244,236,0.12);
+    --line-strong: rgba(247,244,236,0.25);
+    --ease: cubic-bezier(.16,.8,.24,1);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection{ background: var(--gold); color: #0b0c0e; }
+
+  a:focus-visible, .work-card:focus-visible, .project-back:focus-visible,
+  .project-next:focus-visible, .contact-cta:focus-visible, button:focus-visible{
+    outline: 1px solid var(--gold);
+    outline-offset: 4px;
+  }
+
+  .noise{
+    position: fixed; inset: 0; pointer-events: none; z-index: 2;
+    opacity: 0.035; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  a{ color: inherit; text-decoration: none; }
+
+  .eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .container{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* ---------- NAV ---------- */
+  header.site-nav{
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    padding: 26px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    backdrop-filter: blur(6px);
+    background: linear-gradient(to bottom, rgba(11,12,14,0.75), transparent);
+  }
+  .logo-mark{
+    font-family: 'Anton', sans-serif; text-transform: uppercase;
+    font-size: 19px;
+    letter-spacing: 0.02em;
+  }
+  .logo-mark span{ color: var(--gold); }
+  nav.links{ display:flex; gap: 34px; }
+  nav.links a{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    position: relative;
+    transition: color .3s var(--ease);
+  }
+  nav.links a::after{
+    content:''; position:absolute; left:0; bottom:-6px; width:0; height:1px;
+    background: var(--gold); transition: width .35s var(--ease);
+  }
+  nav.links a:hover{ color: var(--text); }
+  nav.links a:hover::after{ width: 100%; }
+
+  .nav-toggle{ display:none; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 140px 40px 100px;
+    overflow: hidden;
+  }
+
+  .hero-iris{
+    position: absolute; inset: 0; z-index: 5;
+    background: var(--bg);
+    clip-path: circle(150% at 50% 50%);
+    animation: iris-open 1.3s 0.15s var(--ease) forwards;
+    pointer-events: none;
+  }
+  @keyframes iris-open{
+    0%{ clip-path: circle(150% at 50% 50%); }
+    100%{ clip-path: circle(0% at 50% 50%); }
+  }
+
+  .hero-shape{
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(0px);
+  }
+  .hero-shape.orange{
+    width: 620px; height: 620px;
+    top: -140px; right: -160px;
+    background: var(--orange);
+    opacity: 0.9;
+    mix-blend-mode: normal;
+  }
+  .hero-shape.blue{
+    width: 460px; height: 460px;
+    bottom: -160px; left: -120px;
+    background: var(--blue);
+    opacity: 0.85;
+  }
+  .hero-shape.blue::after, .hero-shape.orange::after{ content:''; }
+
+  .rec-tag{
+    position: absolute; top: 32px; right: 40px;
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  .rec-dot{
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity: 1; }
+    50%{ opacity: 0.25; }
+  }
+  #timecode{ font-variant-numeric: tabular-nums; color: var(--muted); }
+
+  .hero-eyebrow{ margin-bottom: 28px; }
+
+  .hero-title{
+    font-family: 'Anton', sans-serif; text-transform: uppercase;
+    font-weight: 500;
+    font-size: clamp(48px, 9vw, 118px);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+  }
+  .hero-title .line{ overflow: hidden; display: block; }
+  .hero-title .line span.word{
+    display: inline-block;
+    transform: translateY(110%);
+    animation: rise 0.9s var(--ease) forwards;
+  }
+  @keyframes rise{ to{ transform: translateY(0); } }
+
+  .hero-role{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    margin-top: 22px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.9s var(--ease) forwards;
+  }
+
+  .hero-tagline{
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: clamp(18px, 2.2vw, 26px);
+    color: var(--muted);
+    max-width: 540px;
+    margin-top: 34px;
+    line-height: 1.5;
+    opacity: 0;
+    animation: fadeUp 0.9s 1.05s var(--ease) forwards;
+  }
+  .hero-tagline em{
+    color: var(--bg); background: var(--orange);
+    font-style: normal; font-weight: 800;
+    padding: 2px 10px; display: inline-block;
+  }
+
+  @keyframes fadeUp{
+    from{ opacity: 0; transform: translateY(14px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .scroll-cue{
+    position: absolute; bottom: 56px; left: 40px;
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted-dim);
+    opacity: 0;
+    animation: fadeUp 0.9s 1.3s var(--ease) forwards;
+  }
+  .scroll-cue .bar{ width: 1px; height: 26px; background: var(--muted-dim); position: relative; overflow: hidden; }
+  .scroll-cue .bar::after{
+    content:''; position:absolute; top:-100%; left:0; width:100%; height:100%;
+    background: var(--gold);
+    animation: scrollbar-run 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollbar-run{
+    0%{ top: -100%; } 50%{ top: 100%; } 50.01%{ top: -100%; } 100%{ top: -100%; }
+  }
+
+  /* ---------- SECTIONS GENERAL ---------- */
+  section{ padding: 140px 0; position: relative; }
+  .section-head{ margin-bottom: 64px; }
+  .section-head .eyebrow{ margin-bottom: 18px; }
+  .section-title{
+    font-family: 'Anton', sans-serif; text-transform: uppercase;
+    font-weight: 500;
+    font-size: clamp(30px, 4vw, 46px);
+    letter-spacing: -0.01em;
+  }
+  .section-title .accent{ color: var(--orange); font-style: normal; }
+
+  .reveal{ opacity: 0; transform: translateY(24px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+  .reveal.in{ opacity: 1; transform: translateY(0); }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .about-text p{
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--muted);
+    max-width: 52ch;
+  }
+  .about-text p + p{ margin-top: 20px; }
+  .about-text strong{ color: var(--text); font-weight: 500; }
+
+  .stat-list{ border-top: 1px solid var(--line); }
+  .stat-row{
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 22px 0; border-bottom: 1px solid var(--line);
+  }
+  .stat-row .stat-label{ font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-dim); }
+  .stat-row .stat-value{ font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: 22px; color: var(--text); }
+
+  /* ---------- SERVICES ---------- */
+  .services-split{
+    display: grid; grid-template-columns: 1fr 1fr;
+  }
+  .service-panel{
+    padding: 56px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .service-panel.static{ background: var(--orange); color: #0a0a0a; }
+  .service-panel.motion{ background: var(--blue); color: var(--text); }
+  .service-panel + .service-panel{ border-left: 6px solid var(--bg); }
+  .service-tag{
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em;
+    padding: 5px 10px; border: 1px solid currentColor; display: inline-block; margin-bottom: 26px;
+    color: inherit;
+  }
+  .service-panel h3{
+    font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: 32px; margin-bottom: 18px; color: inherit;
+  }
+  .service-panel ul{ list-style: none; }
+  .service-panel li{
+    font-size: 15px; padding: 9px 0; color: inherit; font-weight: 500;
+  }
+  .service-panel.static li{ border-top: 1px solid rgba(10,10,10,0.18); }
+  .service-panel.motion li{ border-top: 1px solid rgba(247,244,236,0.18); }
+  .service-panel li:first-child{ border-top: none; }
+
+  /* ---------- WORK GRID ---------- */
+  .work-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+    background: var(--bg);
+    border: 4px solid var(--bg);
+  }
+  .work-card{
+    background: var(--surface);
+    padding: 40px;
+    min-height: 260px;
+    position: relative;
+    overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    cursor: pointer;
+  }
+  .work-card .backdrop{
+    position: absolute; inset: 0; opacity: 0.7;
+    transition: transform 1s var(--ease), opacity 0.6s var(--ease);
+  }
+  .work-card:hover .backdrop{ transform: scale(1.06); opacity: 0.95; }
+
+  .work-card.type-static .backdrop{
+    background:
+      linear-gradient(160deg, var(--orange), transparent 65%);
+  }
+  .work-card.type-motion .backdrop{
+    background:
+      linear-gradient(160deg, var(--blue), transparent 65%);
+  }
+  .work-card::before{
+    content:''; position:absolute; inset:0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(237,233,224,0.06) 1px, transparent 1px);
+    background-size: 14px 14px;
+    opacity: 0.5;
+  }
+
+  .work-meta{ position: relative; z-index: 2; }
+  .work-tagrow{ display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .work-type{
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; font-weight: 700;
+    padding: 4px 9px; color: var(--bg);
+  }
+  .type-static .work-type{ background: var(--orange); }
+  .type-motion .work-type{ background: var(--blue); color: var(--text); }
+  .play-icon{
+    width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line-strong);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: scale(0.8); transition: all 0.4s var(--ease);
+  }
+  .work-card:hover .play-icon{ opacity: 1; transform: scale(1); }
+  .play-icon::before{
+    content:''; width: 0; height: 0; margin-left: 2px;
+    border-top: 4px solid transparent; border-bottom: 4px solid transparent; border-left: 6px solid var(--teal);
+  }
+  .work-title{ font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: 24px; font-weight: 500; }
+  .work-client{ font-size: 13px; color: var(--muted-dim); margin-top: 6px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.03em; }
+
+  .work-note{
+    margin-top: 28px; font-size: 12.5px; color: var(--muted-dim); font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ---------- CLIENTS MARQUEE ---------- */
+  .clients-wrap{ overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 36px 0; }
+  .marquee{ display: flex; width: max-content; animation: scroll-left 26s linear infinite; }
+  .marquee-set{ display: flex; }
+  .marquee span{
+    font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: 24px; color: var(--muted-dim);
+    padding: 0 44px; white-space: nowrap;
+  }
+  @keyframes scroll-left{ from{ transform: translateX(0); } to{ transform: translateX(-50%); } }
+
+  /* ---------- PROCESS ---------- */
+  .process-list{ border-top: 2px solid var(--line-strong); }
+  .process-row{
+    display: grid; grid-template-columns: 100px 1fr 1.4fr; gap: 24px; align-items: center;
+    padding: 32px 0; border-bottom: 2px solid var(--line-strong);
+  }
+  .process-num{ font-family: 'Anton', sans-serif; font-size: 40px; color: var(--orange); line-height: 1; }
+  .process-name{ font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: 22px; }
+  .process-desc{ font-size: 14.5px; color: var(--muted); line-height: 1.7; }
+
+  /* ---------- CONTACT ---------- */
+  .contact-section{ text-align: left; }
+  .contact-title{
+    font-family: 'Anton', sans-serif; text-transform: uppercase; font-weight: 500;
+    font-size: clamp(36px, 6vw, 68px);
+    line-height: 1.05; max-width: 780px;
+  }
+  .contact-title .accent{ color: var(--orange); font-style: normal; }
+  .contact-cta{
+    margin-top: 46px; display: inline-flex; align-items: center; gap: 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 20px 32px; background: var(--orange); color: #0a0a0a;
+    transition: all 0.3s var(--ease);
+  }
+  .contact-cta:hover{ background: var(--yellow); gap: 22px; }
+  .contact-links{ display: flex; gap: 34px; margin-top: 56px; flex-wrap: wrap; }
+  .contact-links a{
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: var(--muted);
+    border-bottom: 1px solid transparent; padding-bottom: 3px; transition: all 0.3s var(--ease);
+  }
+  .contact-links a:hover{ color: var(--gold); border-color: var(--gold); }
+
+  footer{
+    padding: 40px 0 120px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+  }
+  footer .eyebrow{ color: var(--muted-dim); }
+
+  /* ---------- TIMELINE SCRUBBER (signature element) ---------- */
+  .timeline-scrubber{
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
+    height: 34px;
+    background: rgba(11,12,14,0.88);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--line);
+    display: flex; align-items: center;
+  }
+  .scrubber-track{
+    position: relative; flex: 1; height: 100%;
+    display: flex; align-items: center;
+    padding: 0 20px;
+  }
+  .scrubber-ticks{
+    position: absolute; left: 20px; right: 20px; top: 0; bottom: 0;
+    display: flex; align-items: center; gap: 0; pointer-events: none;
+  }
+  .tick{ flex: 1; border-left: 1px solid var(--line); height: 10px; }
+  .tick.major{ height: 16px; border-left: 1px solid var(--line-strong); }
+  .scrubber-fill{
+    position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+    height: 1px; background: var(--gold); width: 0%;
+    transition: width 0.05s linear;
+  }
+  .scrubber-playhead{
+    position: absolute; top: 50%; left: 20px; transform: translate(-50%,-50%);
+    width: 9px; height: 9px; border-radius: 50%; background: var(--gold);
+    box-shadow: 0 0 8px rgba(201,162,39,0.6);
+  }
+  .scrubber-code{
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.05em;
+    color: var(--muted); padding: 0 20px; border-left: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  .scrubber-label{
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em;
+    color: var(--muted-dim); padding: 0 20px; text-transform: uppercase;
+  }
+
+  /* ---------- PAGE TRANSITION OVERLAY (aperture reused as signature) ---------- */
+  .transition-overlay{
+    position: fixed; inset: 0; z-index: 300;
+    background: var(--bg);
+    clip-path: circle(0% at 50% 50%);
+    pointer-events: none;
+  }
+
+  /* ---------- PROJECT PAGE ---------- */
+  #page-project{ display: none; }
+  #page-project.active{ display: block; }
+
+  .project-hero{
+    padding: 150px 40px 70px;
+    max-width: 1180px; margin: 0 auto;
+  }
+  .project-back{
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 40px; cursor: pointer;
+    transition: color .3s var(--ease), gap .3s var(--ease);
+  }
+  .project-back:hover{ color: var(--gold); gap: 14px; }
+  .project-back .arrow{ display:inline-block; transform: scaleX(-1); }
+
+  .project-tagrow{ display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+  .project-tag{
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em;
+    padding: 5px 10px; border: 1px solid var(--line-strong);
+  }
+  .project-tag.static{ color: var(--gold); border-color: var(--gold-dim); }
+  .project-tag.motion{ color: var(--teal); border-color: var(--teal-dim); }
+  .project-year{ font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted-dim); }
+
+  .project-title{
+    font-family: 'Anton', sans-serif; text-transform: uppercase; font-weight: 500;
+    font-size: clamp(38px, 6.5vw, 80px); line-height: 1.02; letter-spacing: -0.01em;
+    margin-bottom: 22px;
+  }
+  .project-client{
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--gold); letter-spacing: 0.05em;
+  }
+  .project-intro{
+    font-family: 'Inter', sans-serif; font-weight: 400; font-size: clamp(16px, 1.6vw, 19px);
+    color: var(--muted); max-width: 640px; margin-top: 28px; line-height: 1.7;
+  }
+
+  .project-media{ max-width: 1180px; margin: 0 auto; padding: 0 40px 90px; }
+  .media-frame{
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    border: 1px solid var(--line-strong);
+    overflow: hidden; background: var(--surface);
+  }
+  .media-frame .media-wash{ position: absolute; inset: 0; transition: transform 1.2s var(--ease); }
+  .media-frame:hover .media-wash{ transform: scale(1.03); }
+  .media-frame::after{
+    content:''; position:absolute; inset:0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(237,233,224,0.05) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .media-play{
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 68px; height: 68px; border-radius: 50%;
+    border: 1px solid var(--line-strong); background: rgba(11,12,14,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2; transition: all 0.4s var(--ease); cursor: pointer;
+  }
+  .media-frame:hover .media-play{ border-color: var(--gold); transform: translate(-50%,-50%) scale(1.08); }
+  .media-play::before{
+    content:''; width: 0; height: 0; margin-left: 4px;
+    border-top: 9px solid transparent; border-bottom: 9px solid transparent; border-left: 14px solid var(--text);
+  }
+  .media-caption{
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted-dim);
+    margin-top: 16px; letter-spacing: 0.04em;
+  }
+
+  .project-body{
+    max-width: 1180px; margin: 0 auto; padding: 60px 40px 60px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px;
+    border-top: 1px solid var(--line);
+  }
+  .project-body-block .eyebrow{ margin-bottom: 16px; }
+  .project-body-block p{ font-size: 15px; line-height: 1.8; color: var(--muted); }
+
+  .project-gallery{
+    max-width: 1180px; margin: 0 auto; padding: 60px 40px 120px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    background: var(--line); border: 1px solid var(--line);
+  }
+  .gallery-item{ aspect-ratio: 4/3; position: relative; overflow: hidden; background: var(--bg); }
+  .gallery-item .wash{ position: absolute; inset: 0; transition: transform 1s var(--ease); }
+  .gallery-item:hover .wash{ transform: scale(1.08); }
+
+  .project-next{
+    border-top: 1px solid var(--line); cursor: pointer;
+    padding: 60px 40px 140px; max-width: 1180px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
+  }
+  .project-next .eyebrow{ margin-bottom: 10px; }
+  .project-next-title{ font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: clamp(24px, 3.5vw, 36px); }
+  .next-link{ display: inline-flex; align-items: center; gap: 12px; transition: gap .3s var(--ease), color .3s var(--ease); }
+  .project-next:hover .next-link{ gap: 20px; color: var(--gold); }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width: 860px){
+    .container{ padding: 0 24px; }
+    header.site-nav{ padding: 20px 24px; }
+    nav.links{ display: none; }
+    .hero{ padding: 120px 24px 90px; }
+    .rec-tag{ right: 24px; top: 24px; }
+    .about-grid{ grid-template-columns: 1fr; gap: 48px; }
+    .services-split{ grid-template-columns: 1fr; }
+    .service-panel + .service-panel{ border-left: none; border-top: 1px solid var(--line); }
+    .work-grid{ grid-template-columns: 1fr; }
+    .process-row{ grid-template-columns: 1fr; gap: 8px; }
+    .scrubber-label, .scrubber-ticks{ display: none; }
+    .scrubber-code{ border-left: none; }
+    section{ padding: 90px 0; }
+
+    .project-hero{ padding: 130px 24px 50px; }
+    .project-media{ padding: 0 24px 60px; }
+    .project-body{ grid-template-columns: 1fr; padding: 48px 24px; gap: 32px; }
+    .project-gallery{ grid-template-columns: 1fr 1fr; padding: 40px 24px 90px; }
+    .project-next{ padding: 48px 24px 110px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<header class="site-nav">
+  <div class="logo-mark">A<span>T</span>.</div>
+  <nav class="links">
+    <a href="#about">Chi sono</a>
+    <a href="#services">Servizi</a>
+    <a href="#work">Progetti</a>
+    <a href="#contact">Contatti</a>
+  </nav>
+</header>
+
+<div id="page-home">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-iris"></div>
+  <div class="hero-shape orange"></div>
+  <div class="hero-shape blue"></div>
+  <div class="rec-tag"><span class="rec-dot"></span> REC <span id="timecode">00:00:00:00</span></div>
+
+  <div class="hero-eyebrow eyebrow">Portfolio — Bari / Taranto, Puglia</div>
+
+  <h1 class="hero-title">
+    <span class="line"><span class="word" style="animation-delay:.15s">Alessandro</span></span>
+    <span class="line"><span class="word" style="animation-delay:.28s">Tamburrino</span></span>
+  </h1>
+
+  <div class="hero-role">VISUAL &amp; MOTION DESIGNER</div>
+
+  <p class="hero-tagline">Fermo immagine. <em>Poi tutto si muove.</em><br>Identità visive, grafica e video che raccontano un brand da fermi e in movimento.</p>
+
+  <div class="scroll-cue"><span class="bar"></span> Scorri</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <div class="eyebrow" style="margin-bottom:18px;">Chi sono</div>
+        <p>Sono un <strong>visual e motion designer</strong> pugliese, tra Bari e Taranto. Lavoro come freelance con partita IVA da diversi anni, dopo un percorso che mi ha portato dentro il mondo dell'industria musicale — con una collaborazione con <strong>Universal Music Italia</strong> — e in agenzia, prima di scegliere di lavorare in autonomia.</p>
+        <p>Mi occupo di identità visiva, packaging, grafica per il social, e di tutto ciò che riguarda il video: motion graphics, editing e contenuti animati. Due linguaggi diversi, la stessa cura per il dettaglio.</p>
+        <p>Vivo e lavoro in Puglia, e da qui nasce anche <strong>A Tutta Puglia</strong>, un mio progetto personale che unisce identità visiva e territorio.</p>
+      </div>
+      <div class="stat-list reveal">
+        <div class="stat-row"><span class="stat-label">Esperienza</span><span class="stat-value">7–10 anni</span></div>
+        <div class="stat-row"><span class="stat-label">Ambiti</span><span class="stat-value">Statico + Motion</span></div>
+        <div class="stat-row"><span class="stat-label">Base</span><span class="stat-value">Puglia, IT</span></div>
+        <div class="stat-row"><span class="stat-label">Setup</span><span class="stat-value">Freelance, P.IVA</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Cosa faccio</div>
+      <h2 class="section-title">Due velocità, <span class="accent">un'unica identità</span></h2>
+    </div>
+    <div class="services-split reveal">
+      <div class="service-panel static">
+        <span class="service-tag">STATICO</span>
+        <h3>Identità &amp; grafica</h3>
+        <ul>
+          <li>Brand identity e naming</li>
+          <li>Packaging</li>
+          <li>Contenuti social</li>
+          <li>Grafica editoriale e stampa</li>
+        </ul>
+      </div>
+      <div class="service-panel motion">
+        <span class="service-tag">MOTION</span>
+        <h3>Video &amp; animazione</h3>
+        <ul>
+          <li>Motion graphics</li>
+          <li>Editing video</li>
+          <li>Reel e contenuti per Instagram</li>
+          <li>Animazione per brand e prodotto</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Progetti selezionati</div>
+      <h2 class="section-title">Alcuni <span class="accent">lavori recenti</span></h2>
+    </div>
+    <div class="work-grid reveal">
+
+      <div class="work-card type-static" data-slug="new-aura-meeting" tabindex="0" role="link" aria-label="Apri il progetto New Aura Meeting">
+        <div class="backdrop"></div>
+        <div class="work-meta">
+          <div class="work-tagrow"><span class="work-type">STATICO</span></div>
+          <div class="work-title">New Aura Meeting</div>
+          <div class="work-client">Identità visiva — corporate events</div>
+        </div>
+      </div>
+
+      <div class="work-card type-motion" data-slug="universal-music-italia" tabindex="0" role="link" aria-label="Apri il progetto Universal Music Italia">
+        <div class="backdrop"></div>
+        <div class="work-meta">
+          <div class="work-tagrow"><span class="work-type">MOTION</span><span class="play-icon"></span></div>
+          <div class="work-title">Universal Music Italia</div>
+          <div class="work-client">Motion graphics</div>
+        </div>
+      </div>
+
+      <div class="work-card type-static" data-slug="mozzarella-in-masseria" tabindex="0" role="link" aria-label="Apri il progetto Mozzarella in Masseria">
+        <div class="backdrop"></div>
+        <div class="work-meta">
+          <div class="work-tagrow"><span class="work-type">STATICO</span></div>
+          <div class="work-title">Mozzarella in Masseria</div>
+          <div class="work-client">Rebranding</div>
+        </div>
+      </div>
+
+      <div class="work-card type-motion" data-slug="masseria-semeraro" tabindex="0" role="link" aria-label="Apri il progetto Masseria Semeraro">
+        <div class="backdrop"></div>
+        <div class="work-meta">
+          <div class="work-tagrow"><span class="work-type">MOTION</span><span class="play-icon"></span></div>
+          <div class="work-title">Masseria Semeraro</div>
+          <div class="work-client">Contenuti sportivi — basket</div>
+        </div>
+      </div>
+
+      <div class="work-card type-static" data-slug="ottica-nuzzi" tabindex="0" role="link" aria-label="Apri il progetto Ottica Nuzzi">
+        <div class="backdrop"></div>
+        <div class="work-meta">
+          <div class="work-tagrow"><span class="work-type">STATICO</span></div>
+          <div class="work-title">Ottica Nuzzi</div>
+          <div class="work-client">Grafica &amp; social</div>
+        </div>
+      </div>
+
+      <div class="work-card type-motion" data-slug="a-tutta-puglia" tabindex="0" role="link" aria-label="Apri il progetto A Tutta Puglia">
+        <div class="backdrop"></div>
+        <div class="work-meta">
+          <div class="work-tagrow"><span class="work-type">MOTION</span><span class="play-icon"></span></div>
+          <div class="work-title">A Tutta Puglia</div>
+          <div class="work-client">Progetto personale</div>
+        </div>
+      </div>
+
+    </div>
+    <p class="work-note reveal">// contenuti segnaposto — sostituisci con le tue immagini e video reali</p>
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<div class="clients-wrap">
+  <div class="marquee">
+    <div class="marquee-set">
+      <span>Universal Music Italia</span>
+      <span>Master Group</span>
+      <span>Confcommercio Taranto</span>
+      <span>New Aura Meeting</span>
+      <span>Ottica Nuzzi</span>
+      <span>Bar delle Poste</span>
+      <span>Top Driver</span>
+    </div>
+    <div class="marquee-set" aria-hidden="true">
+      <span>Universal Music Italia</span>
+      <span>Master Group</span>
+      <span>Confcommercio Taranto</span>
+      <span>New Aura Meeting</span>
+      <span>Ottica Nuzzi</span>
+      <span>Bar delle Poste</span>
+      <span>Top Driver</span>
+    </div>
+  </div>
+</div>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Metodo di lavoro</div>
+      <h2 class="section-title">Come <span class="accent">lavoro</span></h2>
+    </div>
+    <div class="process-list reveal">
+      <div class="process-row">
+        <span class="process-num">01</span>
+        <span class="process-name">Brief</span>
+        <span class="process-desc">Capiamo insieme obiettivo, pubblico e tono del progetto.</span>
+      </div>
+      <div class="process-row">
+        <span class="process-num">02</span>
+        <span class="process-name">Concept</span>
+        <span class="process-desc">Direzione visiva: palette, tipografia, primi riferimenti.</span>
+      </div>
+      <div class="process-row">
+        <span class="process-num">03</span>
+        <span class="process-name">Design</span>
+        <span class="process-desc">Sviluppo della grafica statica: identità, layout, materiali.</span>
+      </div>
+      <div class="process-row">
+        <span class="process-num">04</span>
+        <span class="process-name">Motion</span>
+        <span class="process-desc">Animazione e montaggio, dove il progetto prende movimento.</span>
+      </div>
+      <div class="process-row">
+        <span class="process-num">05</span>
+        <span class="process-name">Delivery</span>
+        <span class="process-desc">Consegna dei file pronti per stampa, social o pubblicazione.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow" style="margin-bottom:22px;">Contatti</div>
+      <h2 class="contact-title">Hai un progetto in <span class="accent">mente?</span><br>Parliamone.</h2>
+      <a href="mailto:hello@alessandrotamburrino.it" class="contact-cta">hello@alessandrotamburrino.it →</a>
+      <div class="contact-links">
+        <a href="#">Instagram</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">Behance</a>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <footer>
+      <span class="eyebrow">© 2026 Alessandro Tamburrino — Puglia, Italia</span>
+      <span class="eyebrow">Visual &amp; Motion Design</span>
+    </footer>
+  </div>
+</section>
+
+</div><!-- /page-home -->
+
+<div id="page-project"></div>
+
+<div class="transition-overlay" id="transitionOverlay"></div>
+
+<!-- TIMELINE SCRUBBER -->
+<div class="timeline-scrubber">
+  <div class="scrubber-track">
+    <div class="scrubber-ticks" id="ticks"></div>
+    <div class="scrubber-fill" id="scrubberFill"></div>
+    <div class="scrubber-playhead" id="playhead"></div>
+  </div>
+  <span class="scrubber-code" id="scrubberCode">00:00:00:00</span>
+  <span class="scrubber-label">Scroll timeline</span>
+</div>
+
+<script>
+  // Ambient REC timecode (elapsed time since page load)
+  const tcEl = document.getElementById('timecode');
+  const startTime = performance.now();
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function updateTimecode(){
+    const elapsed = performance.now() - startTime;
+    const totalSec = Math.floor(elapsed / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    const f = Math.floor((elapsed % 1000) / (1000/24)); // 24fps-style frame counter
+    if(tcEl) tcEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}:${pad(f)}`;
+    requestAnimationFrame(updateTimecode);
+  }
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    requestAnimationFrame(updateTimecode);
+  }
+
+  // Build tick marks for the scrubber
+  const ticksWrap = document.getElementById('ticks');
+  const TICK_COUNT = 60;
+  for(let i=0;i<TICK_COUNT;i++){
+    const t = document.createElement('div');
+    t.className = 'tick' + (i % 5 === 0 ? ' major' : '');
+    ticksWrap.appendChild(t);
+  }
+
+  // Scroll-driven scrubber (playhead + fill + timecode mapped to scroll depth)
+  const fillEl = document.getElementById('scrubberFill');
+  const playheadEl = document.getElementById('playhead');
+  const scrubberCodeEl = document.getElementById('scrubberCode');
+  const trackPadding = 20;
+
+  function onScroll(){
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+    const trackWidth = document.querySelector('.scrubber-track').clientWidth - trackPadding * 2;
+
+    fillEl.style.width = (progress * trackWidth) + 'px';
+    playheadEl.style.left = (trackPadding + progress * trackWidth) + 'px';
+
+    // Fake timecode representing "position in the reel", 00:00 to 00:59 minutes:seconds-ish
+    const totalFrames = Math.floor(progress * (59*24 + 23));
+    const mm = Math.floor(totalFrames / (60*24));
+    const ss = Math.floor((totalFrames % (60*24)) / 24);
+    const ff = totalFrames % 24;
+    scrubberCodeEl.textContent = `00:${pad(mm)}:${pad(ss)}:${pad(ff)}`;
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  // Reveal on scroll (reusable — also applied to dynamically injected project pages)
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  function initReveals(container){
+    container.querySelectorAll('.reveal:not(.observed)').forEach(el=>{
+      el.classList.add('observed');
+      io.observe(el);
+    });
+  }
+  initReveals(document);
+
+  // ---------- PROJECT DATA ----------
+  const PROJECTS = [
+    {
+      slug: 'new-aura-meeting',
+      title: 'New Aura Meeting',
+      client: 'New Aura Meeting — corporate events',
+      type: 'static',
+      year: '2025',
+      intro: "Un'identità visiva pensata per un'agenzia di eventi aziendali: doveva comunicare precisione e cura, senza scivolare nel linguaggio freddo del \"corporate\".",
+      goal: "Costruire un sistema visivo riconoscibile — logo, palette, tipografia — capace di reggere sia su un biglietto da visita che su un booth fieristico.",
+      approach: "Esplorazione di più direzioni tra monogramma e wordmark, lavorando su blu profondo e oro come coppia cromatica, fino ad arrivare a un simbolo adattabile a formati molto diversi tra loro.",
+      result: "Un logo flessibile, pensato per funzionare in digitale e in stampa, con linee guida chiare per l'uso su materiali diversi.",
+      gallery: 3
+    },
+    {
+      slug: 'universal-music-italia',
+      title: 'Universal Music Italia',
+      client: 'Universal Music Italia',
+      type: 'motion',
+      year: '2022',
+      intro: "Motion graphics realizzati in collaborazione con Universal Music Italia: contenuti animati pensati per accompagnare release musicali e comunicazione social.",
+      goal: "Dare un'identità in movimento ai contenuti musicali, mantenendo un ritmo di montaggio coerente con il pezzo.",
+      approach: "Sincronizzazione tra elementi grafici e audio, con animazioni tipografiche costruite sulle esigenze specifiche di ogni release.",
+      result: "Contenuti pubblicati sui canali ufficiali, pensati per la fruizione rapida e verticale dei social.",
+      gallery: 3
+    },
+    {
+      slug: 'mozzarella-in-masseria',
+      title: 'Mozzarella in Masseria',
+      client: 'Mozzarella in Masseria',
+      type: 'static',
+      year: '2023',
+      intro: "Un restyling di marca per un brand legato alla tradizione casearia pugliese: l'obiettivo era dare più carattere mantenendo l'autenticità del prodotto.",
+      goal: "Aggiornare l'identità visiva senza perdere il legame con la tradizione e il territorio.",
+      approach: "Nuova palette, nuova tipografia e un sistema di packaging più coerente, con una narrazione visiva costruita attorno al gesto artigianale.",
+      result: "Un'identità più solida, con palette e tipografia documentate come caso studio.",
+      gallery: 3
+    },
+    {
+      slug: 'masseria-semeraro',
+      title: 'Masseria Semeraro',
+      client: 'Masseria Semeraro — basket',
+      type: 'motion',
+      year: '2024 — in corso',
+      intro: "Gestione dei contenuti social per una squadra di basket pugliese: recap partite, preview e momenti salienti della stagione.",
+      goal: "Raccontare la stagione sportiva con contenuti che trasmettano l'energia reale della partita.",
+      approach: "Montaggio rapido, grafiche essenziali per punteggi e statistiche, linguaggio diretto — mai da \"social media manager da manuale\".",
+      result: "Un flusso costante di contenuti che accompagna la squadra partita dopo partita.",
+      gallery: 3
+    },
+    {
+      slug: 'ottica-nuzzi',
+      title: 'Ottica Nuzzi',
+      client: 'Ottica Nuzzi',
+      type: 'static',
+      year: '2024',
+      intro: "Materiali grafici e contenuti social per un'attività di ottica locale, dal roll-up banner alla comunicazione dei servizi in negozio.",
+      goal: "Comunicare i servizi in modo chiaro, con una grafica pulita adatta sia alla stampa che al digitale.",
+      approach: "Sistema grafico semplice, gerarchia chiara delle informazioni, coerenza tra materiali fisici e contenuti online.",
+      result: "Materiali pronti per stampa e pubblicazione, allineati alla comunicazione del negozio.",
+      gallery: 3
+    },
+    {
+      slug: 'a-tutta-puglia',
+      title: 'A Tutta Puglia',
+      client: 'Progetto personale',
+      type: 'motion',
+      year: '2026',
+      intro: "Un progetto personale nato dal legame con la Puglia: piccoli oggetti stampati in 3D — si parte da portachiavi — ispirati ai simboli del territorio, pensati per chi ha un legame emotivo con questa terra.",
+      goal: "Costruire un brand riconoscibile attorno all'identità pugliese, capace di parlare a chi la Puglia la sente propria anche da lontano.",
+      approach: "Identità visiva in stile sketch/line-art, calendario editoriale di lancio, copy diretto e non patinato, pensato per Instagram Reels.",
+      result: "In fase di lancio — calendario editoriale e materiali di comunicazione pronti alla pubblicazione.",
+      gallery: 3
+    }
+  ];
+
+  // ---------- PROJECT PAGE RENDERING ----------
+  function renderProject(p){
+    const typeLabel = p.type === 'static' ? 'STATICO' : 'MOTION';
+    const washStatic = (a) => `linear-gradient(160deg, rgba(201,162,39,${a}), transparent 65%)`;
+    const washMotion = (a) => `linear-gradient(160deg, rgba(74,116,106,${a}), transparent 65%)`;
+
+    const mediaBlock = `
+      <div class="media-frame">
+        <div class="media-wash" style="background:${p.type==='static' ? washStatic(0.18) : washMotion(0.26)}"></div>
+        ${p.type==='motion' ? '<div class="media-play"></div>' : ''}
+      </div>
+      <div class="media-caption">// ${p.type === 'motion' ? "anteprima video — sostituisci con il tuo file .mp4 o un embed Vimeo/YouTube" : "immagine principale — sostituisci con il tuo scatto reale"}</div>
+    `;
+
+    const galleryItems = Array.from({ length: p.gallery }).map((_, i) => `
+      <div class="gallery-item">
+        <div class="wash" style="background:${p.type==='static' ? washStatic(0.14 + i*0.03).replace('160deg','200deg') : washMotion(0.18 + i*0.03).replace('160deg','200deg')}"></div>
+      </div>
+    `).join('');
+
+    const currentIndex = PROJECTS.findIndex(x => x.slug === p.slug);
+    const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length];
+
+    return `
+      <div class="project-hero">
+        <div class="project-back" data-nav="home" tabindex="0" role="link" aria-label="Torna al portfolio"><span class="arrow">→</span> Torna al portfolio</div>
+        <div class="project-tagrow reveal">
+          <span class="project-tag ${p.type}">${typeLabel}</span>
+          <span class="project-year">${p.year}</span>
+        </div>
+        <h1 class="project-title reveal">${p.title}</h1>
+        <div class="project-client reveal">${p.client}</div>
+        <p class="project-intro reveal">${p.intro}</p>
+      </div>
+      <div class="project-media reveal">
+        ${mediaBlock}
+      </div>
+      <div class="project-body">
+        <div class="project-body-block reveal">
+          <div class="eyebrow">Obiettivo</div>
+          <p>${p.goal}</p>
+        </div>
+        <div class="project-body-block reveal">
+          <div class="eyebrow">Approccio</div>
+          <p>${p.approach}</p>
+        </div>
+        <div class="project-body-block reveal">
+          <div class="eyebrow">Risultato</div>
+          <p>${p.result}</p>
+        </div>
+      </div>
+      <div class="project-gallery reveal">
+        ${galleryItems}
+      </div>
+      <div class="project-next reveal" data-nav="project" data-slug="${nextProject.slug}" tabindex="0" role="link" aria-label="Vai al progetto ${nextProject.title}">
+        <div>
+          <div class="eyebrow">Prossimo progetto</div>
+          <div class="project-next-title">${nextProject.title}</div>
+        </div>
+        <span class="next-link eyebrow">Vai al progetto →</span>
+      </div>
+    `;
+  }
+
+  // ---------- ROUTING ----------
+  const pageHome = document.getElementById('page-home');
+  const pageProject = document.getElementById('page-project');
+  const overlay = document.getElementById('transitionOverlay');
+
+  function showHome(){
+    pageProject.classList.remove('active');
+    pageProject.innerHTML = '';
+    pageHome.style.display = '';
+    document.title = 'Alessandro Tamburrino — Visual & Motion Designer';
+    window.scrollTo(0, 0);
+  }
+
+  function showProject(slug){
+    const p = PROJECTS.find(x => x.slug === slug);
+    if(!p){ showHome(); return; }
+    pageHome.style.display = 'none';
+    pageProject.innerHTML = renderProject(p);
+    pageProject.classList.add('active');
+    document.title = p.title + ' — Alessandro Tamburrino';
+    window.scrollTo(0, 0);
+    initReveals(pageProject);
+    bindProjectNav();
+  }
+
+  function bindProjectNav(){
+    pageProject.querySelectorAll('[data-nav="home"]').forEach(el=>{
+      const go = (e)=> transitionTo(e, ()=>{ location.hash = ''; });
+      el.addEventListener('click', go);
+      el.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(e); } });
+    });
+    pageProject.querySelectorAll('[data-nav="project"]').forEach(el=>{
+      const go = (e)=> transitionTo(e, ()=>{ location.hash = '/progetto/' + el.dataset.slug; });
+      el.addEventListener('click', go);
+      el.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(e); } });
+    });
+  }
+
+  function transitionTo(e, applyHashChange){
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((rect.left + rect.width / 2) / window.innerWidth) * 100;
+    const y = ((rect.top + rect.height / 2) / window.innerHeight) * 100;
+    runTransition(x, y, applyHashChange);
+  }
+
+  function runTransition(x, y, applyChange){
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduced){ applyChange(); return; }
+    overlay.style.pointerEvents = 'all';
+    const closeAnim = overlay.animate([
+      { clipPath: `circle(0% at ${x}% ${y}%)` },
+      { clipPath: `circle(150% at ${x}% ${y}%)` }
+    ], { duration: 600, easing: 'cubic-bezier(.16,.8,.24,1)', fill: 'forwards' });
+    closeAnim.onfinish = () => {
+      applyChange();
+      const openAnim = overlay.animate([
+        { clipPath: `circle(150% at ${x}% ${y}%)` },
+        { clipPath: `circle(0% at ${x}% ${y}%)` }
+      ], { duration: 600, easing: 'cubic-bezier(.16,.8,.24,1)', fill: 'forwards' });
+      openAnim.onfinish = () => { overlay.style.pointerEvents = 'none'; };
+    };
+  }
+
+  function handleRoute(){
+    const hash = location.hash.replace('#', '');
+    const match = hash.match(/^\/progetto\/(.+)$/);
+    if(match){ showProject(match[1]); }
+    else{ showHome(); }
+  }
+  window.addEventListener('hashchange', handleRoute);
+
+  // Bind home work-cards (click + keyboard)
+  document.querySelectorAll('.work-card').forEach(card=>{
+    card.addEventListener('click', (e)=>{
+      transitionTo(e, ()=>{ location.hash = '/progetto/' + card.dataset.slug; });
+    });
+    card.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        transitionTo(e, ()=>{ location.hash = '/progetto/' + card.dataset.slug; });
+      }
+    });
+  });
+
+  handleRoute(); // initial render based on URL hash
+</script>
+
+</body>
+</html>
