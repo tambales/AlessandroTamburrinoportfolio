@@ -87,6 +87,7 @@
     letter-spacing: 0.02em;
   }
   .logo-mark span{ color: var(--gold); }
+  .logo-mark img{ display:block; height:28px; width:auto; }
   nav.links{ display:flex; gap: 34px; }
   nav.links a{
     font-family: 'JetBrains Mono', monospace;
@@ -559,6 +560,9 @@
   .next-link{ display: inline-flex; align-items: center; gap: 12px; transition: gap .3s var(--ease), color .3s var(--ease); }
   .project-next:hover .next-link{ gap: 20px; color: var(--gold); }
 
+
+  /* il timecode REC non deve sovrapporsi al menu su desktop */
+  @media (min-width: 861px){ .rec-tag{ top: 86px; } }
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   }
@@ -592,7 +596,7 @@
 <div class="noise"></div>
 
 <header class="site-nav">
-  <div class="logo-mark">A<span>T</span>.</div>
+  <a class="logo-mark" href="#" aria-label="Alessandro Tamburrino — home"><img src="img/logo.svg" alt="Alessandro Tamburrino" height="28"></a>
   <nav class="links">
     <a href="#about">Chi sono</a>
     <a href="#services">Servizi</a>
