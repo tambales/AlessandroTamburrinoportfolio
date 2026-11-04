@@ -551,6 +551,31 @@
   /* foto vere: colonne, ogni immagine mantiene le sue proporzioni */
   .gallery-masonry{ column-count: 3; column-gap: 3px; }
   .gallery-masonry img{ display:block; width:100%; height:auto; margin-bottom:3px; break-inside:avoid; background:var(--surface); }
+
+  /* ---------- scelta layout pagina progetto ---------- */
+  .layout-switch{ display:flex; gap:6px; margin-top:28px; flex-wrap:wrap; }
+  .layout-switch button{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    padding:9px 14px; border:1.5px solid #111; background:transparent; color:#111; cursor:pointer; }
+  .layout-switch button.on{ background:#e63312; border-color:#e63312; color:#fff; }
+  /* sequenza: una foto per riga, grande */
+  .layout-stack .gallery-masonry{ column-count:1; }
+  .layout-stack .gallery-masonry img{ margin-bottom:28px; }
+  .layout-stack .project-gallery{ max-width:1000px; }
+  /* split: testo fisso a sinistra, foto che scorrono a destra */
+  .split{ display:grid; grid-template-columns:minmax(340px,5fr) 7fr; max-width:1480px; margin:0 auto; }
+  .split-text{ position:sticky; top:0; align-self:start; max-height:100vh; overflow:auto; padding:120px 40px 40px; }
+  .split-text .project-hero{ padding:0 0 28px; max-width:none; }
+  .split-text .project-body{ display:block; padding:28px 0 0; max-width:none; }
+  .split-text .project-body-block{ margin-bottom:26px; }
+  .split-media{ padding-top:90px; }
+  .split-media .project-media{ padding:0 0 3px; max-width:none; }
+  .split-media .project-gallery{ padding:0 0 60px; max-width:none; }
+  .split-media .gallery-masonry{ column-count:1; }
+  @media (max-width:860px){
+    .split{ display:block; }
+    .split-text{ position:static; max-height:none; padding:130px 24px 20px; }
+    .split-media{ padding-top:0; }
+  }
   .img-missing{ display:none !important; }
 
   /* immagine o video principale del progetto */
@@ -772,6 +797,7 @@
   header.site-nav.scrolled{ background: linear-gradient(to bottom, rgba(241,238,232,.96), rgba(241,238,232,0)) !important; }
   header.site-nav:not(.scrolled) nav.links a{ color:#fff; }
   header.site-nav:not(.scrolled) nav.links a:hover{ color:#111; }
+  body:has(#page-project.active) header.site-nav:not(.scrolled) nav.links a{ color:#111; }
 
   /* il timecode REC non deve sovrapporsi al menu su desktop */
   @media (min-width: 861px){ .rec-tag{ top: 86px; } }
@@ -1309,6 +1335,7 @@
   }
 
   // ---------- PROJECT PAGE RENDERING ----------
+  let projLayout = 'grid';
   function renderProject(p){
     const typeLabel = p.type === 'static' ? 'GRAPHIC DESIGN' : 'MOTION';
     const washStatic = (a) => `linear-gradient(160deg, rgba(201,162,39,${a}), transparent 65%)`;
@@ -1342,7 +1369,8 @@
     const currentIndex = PROJECTS.findIndex(x => x.slug === p.slug);
     const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length];
 
-    return `
+    const sw = `<div class="layout-switch" aria-label="Layout pagina">${[['grid','Griglia'],['stack','Sequenza'],['split','Split']].map(([k,l])=>`<button type="button" data-layout="${k}" class="${projLayout===k?'on':''}">${l}</button>`).join('')}</div>`;
+    const hero = `
       <div class="project-hero">
         <div class="project-back" data-nav="home" tabindex="0" role="link" aria-label="Torna al portfolio"><span class="arrow">→</span> Torna al portfolio</div>
         <div class="project-tagrow reveal">
@@ -1352,35 +1380,28 @@
         <h1 class="project-title reveal">${p.title}</h1>
         <div class="project-client reveal">${p.client}</div>
         <p class="project-intro reveal">${p.intro}</p>
-      </div>
-      <div class="project-media reveal">
-        ${mediaBlock}
-      </div>
+        ${sw}
+      </div>`;
+    const media = `<div class="project-media reveal">${mediaBlock}</div>`;
+    const body = `
       <div class="project-body">
-        <div class="project-body-block reveal">
-          <div class="eyebrow">Obiettivo</div>
-          <p>${p.goal}</p>
-        </div>
-        <div class="project-body-block reveal">
-          <div class="eyebrow">Approccio</div>
-          <p>${p.approach}</p>
-        </div>
-        <div class="project-body-block reveal">
-          <div class="eyebrow">Risultato</div>
-          <p>${p.result}</p>
-        </div>
-      </div>
-      <div class="project-gallery reveal">
-        ${galleryHtml}
-      </div>
+        <div class="project-body-block reveal"><div class="eyebrow">Obiettivo</div><p>${p.goal}</p></div>
+        <div class="project-body-block reveal"><div class="eyebrow">Approccio</div><p>${p.approach}</p></div>
+        <div class="project-body-block reveal"><div class="eyebrow">Risultato</div><p>${p.result}</p></div>
+      </div>`;
+    const gallery = `<div class="project-gallery reveal">${galleryHtml}</div>`;
+    const next = `
       <div class="project-next reveal" data-nav="project" data-slug="${nextProject.slug}" tabindex="0" role="link" aria-label="Vai al progetto ${nextProject.title}">
         <div>
           <div class="eyebrow">Prossimo progetto</div>
           <div class="project-next-title">${nextProject.title}</div>
         </div>
         <span class="next-link eyebrow">Vai al progetto →</span>
-      </div>
-    `;
+      </div>`;
+    if(projLayout === 'split'){
+      return `<div class="split"><aside class="split-text">${hero}${body}</aside><div class="split-media">${media}${gallery}</div></div>${next}`;
+    }
+    return hero + media + body + gallery + next;
   }
 
   // ---------- ROUTING ----------
@@ -1401,11 +1422,29 @@
     if(!p){ showHome(); return; }
     pageHome.style.display = 'none';
     pageProject.innerHTML = renderProject(p);
+    pageProject.classList.toggle('layout-stack', projLayout==='stack');
     pageProject.classList.add('active');
     document.title = p.title + ' — Alessandro Tamburrino';
     window.scrollTo(0, 0);
     initReveals(pageProject);
     bindProjectNav();
+    bindLayoutSwitch(p);
+  }
+
+  function bindLayoutSwitch(p){
+    pageProject.querySelectorAll('[data-layout]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        projLayout = b.dataset.layout;
+        const y = window.scrollY;
+        pageProject.innerHTML = renderProject(p);
+        pageProject.classList.toggle('layout-stack', projLayout==='stack');
+        initReveals(pageProject);
+        bindProjectNav();
+        bindLayoutSwitch(p);
+        window.scrollTo(0, y);
+        pageProject.querySelectorAll('.reveal').forEach(el=>el.classList.add('in','visible','is-visible'));
+      });
+    });
   }
 
   function bindProjectNav(){
