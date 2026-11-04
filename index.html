@@ -561,20 +561,39 @@
   .layout-stack .gallery-masonry{ column-count:1; }
   .layout-stack .gallery-masonry img{ margin-bottom:28px; }
   .layout-stack .project-gallery{ max-width:1000px; }
-  /* split: testo fisso a sinistra, foto che scorrono a destra */
-  .split{ display:grid; grid-template-columns:minmax(340px,5fr) 7fr; max-width:1480px; margin:0 auto; }
-  .split-text{ position:sticky; top:0; align-self:start; max-height:100vh; overflow:auto; padding:120px 40px 40px; }
-  .split-text .project-hero{ padding:0 0 28px; max-width:none; }
-  .split-text .project-body{ display:block; padding:28px 0 0; max-width:none; }
-  .split-text .project-body-block{ margin-bottom:26px; }
-  .split-media{ padding-top:90px; }
-  .split-media .project-media{ padding:0 0 3px; max-width:none; }
-  .split-media .project-gallery{ padding:0 0 60px; max-width:none; }
+  /* pagina progetto: testo fisso a sinistra, foto che scorrono a destra */
+  .split{ display:grid; grid-template-columns:1fr 1fr; gap:48px; max-width:1480px; margin:0 auto; padding:0 40px; }
+  .split-text{ position:sticky; top:84px; align-self:start; max-height:calc(100vh - 100px); overflow:auto; scrollbar-width:none; padding:56px 0 40px; }
+  .split-text::-webkit-scrollbar{ display:none; }
+  .split-text .project-hero{ padding:0 0 36px; max-width:none; margin:0; }
+  .split-text .project-title{ font-size:clamp(44px,5.4vw,84px); }
+  .ov-label{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+  .ov-text{ font-size:17px; line-height:1.55; max-width:560px; margin-bottom:34px; }
+  .ov-rows{ border-top:1px solid #111; margin-bottom:34px; }
+  .ov-row{ display:flex; justify-content:space-between; gap:24px; padding:14px 0; border-bottom:1px solid rgba(17,17,17,.25); font-size:15px; }
+  .ov-row span:first-child{ color:var(--muted); }
+  .ov-row span:last-child{ font-weight:600; text-align:right; }
+  .split-text .project-body{ display:block; padding:0; max-width:none; border:0; }
+  .split-text .project-body-block{ margin-bottom:22px; }
+  .split-media{ padding-top:56px; display:flex; flex-direction:column; gap:12px; }
+  .split-media .project-media{ padding:0; max-width:none; }
+  .split-media .media-frame{ margin:0; }
+  .split-media .project-gallery{ padding:0; max-width:none; }
   .split-media .gallery-masonry{ column-count:1; }
+  .split-media .gallery-masonry img{ margin-bottom:12px; }
+  .next-card{ display:block; cursor:pointer; margin:90px 40px 120px; max-width:1400px; }
+  @media (min-width:1480px){ .next-card{ margin-left:auto; margin-right:auto; } }
+  .next-card .eyebrow{ margin-bottom:18px; }
+  .next-thumb{ position:relative; aspect-ratio:16/7; background:#111; overflow:hidden; }
+  .next-thumb img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .8s var(--ease); }
+  .next-card:hover .next-thumb img{ transform:scale(1.04); }
+  .next-ph{ position:absolute; inset:0; background:linear-gradient(135deg,#e63312,#111 80%); }
+  .next-card .project-next-title{ margin-top:16px; }
   @media (max-width:860px){
-    .split{ display:block; }
-    .split-text{ position:static; max-height:none; padding:130px 24px 20px; }
+    .split{ display:block; padding:0 24px; }
+    .split-text{ position:static; max-height:none; overflow:visible; padding:120px 0 24px; }
     .split-media{ padding-top:0; }
+    .next-card{ margin:60px 24px 110px; }
   }
   .img-missing{ display:none !important; }
 
@@ -1335,7 +1354,7 @@
   }
 
   // ---------- PROJECT PAGE RENDERING ----------
-  let projLayout = 'grid';
+  let projLayout = 'split';
   function renderProject(p){
     const typeLabel = p.type === 'static' ? 'GRAPHIC DESIGN' : 'MOTION';
     const washStatic = (a) => `linear-gradient(160deg, rgba(201,162,39,${a}), transparent 65%)`;
@@ -1369,39 +1388,42 @@
     const currentIndex = PROJECTS.findIndex(x => x.slug === p.slug);
     const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length];
 
-    const sw = `<div class="layout-switch" aria-label="Layout pagina">${[['grid','Griglia'],['stack','Sequenza'],['split','Split']].map(([k,l])=>`<button type="button" data-layout="${k}" class="${projLayout===k?'on':''}">${l}</button>`).join('')}</div>`;
     const hero = `
       <div class="project-hero">
         <div class="project-back" data-nav="home" tabindex="0" role="link" aria-label="Torna al portfolio"><span class="arrow">→</span> Torna al portfolio</div>
         <div class="project-tagrow reveal">
           <span class="project-tag ${p.type}">${typeLabel}</span>
-          <span class="project-year">${p.year}</span>
         </div>
         <h1 class="project-title reveal">${p.title}</h1>
-        <div class="project-client reveal">${p.client}</div>
-        <p class="project-intro reveal">${p.intro}</p>
-        ${sw}
       </div>`;
-    const media = `<div class="project-media reveal">${mediaBlock}</div>`;
+    const overview = `
+      <div class="reveal">
+        <div class="ov-label">Overview</div>
+        <p class="ov-text">${p.intro}</p>
+        <div class="ov-rows">
+          <div class="ov-row"><span>Cliente</span><span>${p.client}</span></div>
+          <div class="ov-row"><span>Data</span><span>${p.year}</span></div>
+          <div class="ov-row"><span>Servizi</span><span>${p.sub || typeLabel}</span></div>
+        </div>
+      </div>`;
     const body = `
       <div class="project-body">
         <div class="project-body-block reveal"><div class="eyebrow">Obiettivo</div><p>${p.goal}</p></div>
         <div class="project-body-block reveal"><div class="eyebrow">Approccio</div><p>${p.approach}</p></div>
         <div class="project-body-block reveal"><div class="eyebrow">Risultato</div><p>${p.result}</p></div>
       </div>`;
+    const media = `<div class="project-media reveal">${mediaBlock}</div>`;
     const gallery = `<div class="project-gallery reveal">${galleryHtml}</div>`;
+    const nextThumb = nextProject.cover
+      ? `<div class="next-thumb"><div class="next-ph"></div>${imgTag(nextProject.cover, nextProject.title)}</div>`
+      : `<div class="next-thumb"><div class="next-ph"></div></div>`;
     const next = `
-      <div class="project-next reveal" data-nav="project" data-slug="${nextProject.slug}" tabindex="0" role="link" aria-label="Vai al progetto ${nextProject.title}">
-        <div>
-          <div class="eyebrow">Prossimo progetto</div>
-          <div class="project-next-title">${nextProject.title}</div>
-        </div>
-        <span class="next-link eyebrow">Vai al progetto →</span>
+      <div class="next-card reveal" data-nav="project" data-slug="${nextProject.slug}" tabindex="0" role="link" aria-label="Vai al progetto ${nextProject.title}">
+        <div class="eyebrow">Prossimo progetto</div>
+        ${nextThumb}
+        <div class="project-next-title">${nextProject.title}</div>
       </div>`;
-    if(projLayout === 'split'){
-      return `<div class="split"><aside class="split-text">${hero}${body}</aside><div class="split-media">${media}${gallery}</div></div>${next}`;
-    }
-    return hero + media + body + gallery + next;
+    return `<div class="split"><aside class="split-text">${hero}${overview}${body}</aside><div class="split-media">${media}${gallery}</div></div>${next}`;
   }
 
   // ---------- ROUTING ----------
@@ -1428,7 +1450,6 @@
     window.scrollTo(0, 0);
     initReveals(pageProject);
     bindProjectNav();
-    bindLayoutSwitch(p);
   }
 
   function bindLayoutSwitch(p){
