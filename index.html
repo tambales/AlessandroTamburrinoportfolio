@@ -543,9 +543,21 @@
 
   .project-gallery{
     max-width: 1180px; margin: 0 auto; padding: 60px 40px 120px;
+  }
+  .gallery-grid{
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
     background: var(--line); border: 1px solid var(--line);
   }
+  /* foto vere: colonne, ogni immagine mantiene le sue proporzioni */
+  .gallery-masonry{ column-count: 3; column-gap: 3px; }
+  .gallery-masonry img{ display:block; width:100%; height:auto; margin-bottom:3px; break-inside:avoid; background:var(--surface); }
+  .img-missing{ display:none !important; }
+
+  /* immagine o video principale del progetto */
+  .media-frame.is-image{ aspect-ratio:auto; background:transparent; border:0; }
+  .media-frame.is-image::after{ display:none; }
+  .media-frame .media-img{ display:block; width:100%; height:auto; max-height:82vh; object-fit:contain; margin:0 auto; background:var(--surface); }
+  .media-frame iframe, .media-frame video{ position:absolute; inset:0; width:100%; height:100%; border:0; background:#111; }
   .gallery-item{ aspect-ratio: 4/3; position: relative; overflow: hidden; background: var(--bg); }
   .gallery-item .wash{ position: absolute; inset: 0; transition: transform 1s var(--ease); }
   .gallery-item:hover .wash{ transform: scale(1.08); }
@@ -847,7 +859,9 @@
     .project-hero{ padding: 130px 24px 50px; }
     .project-media{ padding: 0 24px 60px; }
     .project-body{ grid-template-columns: 1fr; padding: 48px 24px; gap: 32px; }
-    .project-gallery{ grid-template-columns: 1fr 1fr; padding: 40px 24px 90px; }
+    .project-gallery{ padding: 40px 24px 90px; }
+    .gallery-grid{ grid-template-columns: 1fr 1fr; }
+    .gallery-masonry{ column-count: 2; }
     .project-next{ padding: 48px 24px 110px; }
   }
 </style>
@@ -1165,9 +1179,19 @@
   initReveals(document);
 
   // ---------- PROJECT DATA ----------
+  // UN SOLO ELENCO: ogni blocco genera la scheda in home e la pagina del progetto.
+  //  cover:  immagine di copertina (scheda in home e immagine grande nella pagina)
+  //  video:  link Vimeo o YouTube (o un .mp4 nella cartella video); se c'è, sostituisce l'immagine grande
+  //  images: foto della galleria, nell'ordine in cui compaiono
+  //  Nei percorsi puoi scrivere 'img/1' senza estensione: il sito prova .jpg, .jpeg, .png, .webp.
+  //  Se conosci l'estensione scrivila ('img/1.png'): si carica più veloce.
   const PROJECTS = [
     {
       slug: 'new-aura-meeting',
+      sub: 'Identità visiva — corporate events',
+      cover: '',
+      video: '',
+      images: [],
       title: 'New Aura Meeting',
       client: 'New Aura Meeting — corporate events',
       type: 'static',
@@ -1180,6 +1204,10 @@
     },
     {
       slug: 'universal-music-italia',
+      sub: 'Motion graphics',
+      cover: '',
+      video: '',
+      images: [],
       title: 'Universal Music Italia',
       client: 'Universal Music Italia',
       type: 'motion',
@@ -1192,6 +1220,10 @@
     },
     {
       slug: 'mozzarella-in-masseria',
+      sub: 'Rebranding',
+      cover: '',
+      video: '',
+      images: [],
       title: 'Mozzarella in Masseria',
       client: 'Mozzarella in Masseria',
       type: 'static',
@@ -1204,6 +1236,10 @@
     },
     {
       slug: 'masseria-semeraro',
+      sub: 'Contenuti sportivi — basket',
+      cover: '',
+      video: '',
+      images: [],
       title: 'Masseria Semeraro',
       client: 'Masseria Semeraro — basket',
       type: 'motion',
@@ -1216,6 +1252,10 @@
     },
     {
       slug: 'ottica-nuzzi',
+      sub: 'Grafica & social',
+      cover: 'img/1',
+      video: '',
+      images: ['img/2', 'img/3', 'img/4', 'img/5', 'img/6', 'img/7', 'img/8', 'img/9'],
       title: 'Ottica Nuzzi',
       client: 'Ottica Nuzzi',
       type: 'static',
@@ -1228,6 +1268,10 @@
     },
     {
       slug: 'a-tutta-puglia',
+      sub: 'Progetto personale',
+      cover: '',
+      video: '',
+      images: [],
       title: 'A Tutta Puglia',
       client: 'Progetto personale',
       type: 'motion',
@@ -1240,25 +1284,59 @@
     }
   ];
 
+  // ---------- IMMAGINI E VIDEO ----------
+  const IMG_EXTS = ['jpg','jpeg','png','webp','JPG','JPEG','PNG','WEBP'];
+  function imgTag(src, alt, cls){
+    const hasExt = /\.[A-Za-z0-9]{3,4}$/.test(src);
+    const first = hasExt ? src : src + '.' + IMG_EXTS[0];
+    return `<img ${cls ? `class="${cls}" ` : ''}src="${first}" data-base="${hasExt ? '' : src}" data-try="0" alt="${String(alt).replace(/"/g,'&quot;')}" loading="lazy" onerror="imgFallback(this)">`;
+  }
+  function imgFallback(el){
+    const base = el.dataset.base;
+    const t = (+el.dataset.try) + 1;
+    if(!base || t >= IMG_EXTS.length){ el.onerror = null; el.classList.add('img-missing'); return; }
+    el.dataset.try = t;
+    el.src = base + '.' + IMG_EXTS[t];
+  }
+  function videoEmbed(url){
+    if(/\.mp4(\?.*)?$/i.test(url)) return `<video src="${url}" controls playsinline preload="metadata"></video>`;
+    let m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+    if(m) return `<iframe src="https://www.youtube.com/embed/${m[1]}" title="Video del progetto" allow="fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+    m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if(m) return `<iframe src="https://player.vimeo.com/video/${m[1]}" title="Video del progetto" allow="fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+    return '';
+  }
+
   // ---------- PROJECT PAGE RENDERING ----------
   function renderProject(p){
     const typeLabel = p.type === 'static' ? 'GRAPHIC DESIGN' : 'MOTION';
     const washStatic = (a) => `linear-gradient(160deg, rgba(201,162,39,${a}), transparent 65%)`;
     const washMotion = (a) => `linear-gradient(160deg, rgba(74,116,106,${a}), transparent 65%)`;
 
-    const mediaBlock = `
+    const embed = p.video ? videoEmbed(p.video) : '';
+    let mediaBlock;
+    if(embed){
+      mediaBlock = `<div class="media-frame">${embed}</div>`;
+    }else if(p.cover){
+      mediaBlock = `<div class="media-frame is-image">${imgTag(p.cover, p.title, 'media-img')}</div>`;
+    }else{
+      mediaBlock = `
       <div class="media-frame">
         <div class="media-wash" style="background:${p.type==='static' ? washStatic(0.18) : washMotion(0.26)}"></div>
         ${p.type==='motion' ? '<div class="media-play"></div>' : ''}
       </div>
-      <div class="media-caption">// ${p.type === 'motion' ? "anteprima video — sostituisci con il tuo file .mp4 o un embed Vimeo/YouTube" : "immagine principale — sostituisci con il tuo scatto reale"}</div>
-    `;
+      <div class="media-caption">// segnaposto: aggiungi cover o video a questo progetto</div>`;
+    }
 
-    const galleryItems = Array.from({ length: p.gallery }).map((_, i) => `
+    let galleryHtml;
+    if(p.images && p.images.length){
+      galleryHtml = `<div class="gallery-masonry">${p.images.map((src, i) => imgTag(src, p.title + ' — immagine ' + (i + 1))).join('')}</div>`;
+    }else{
+      galleryHtml = `<div class="gallery-grid">${Array.from({ length: p.gallery || 3 }).map((_, i) => `
       <div class="gallery-item">
         <div class="wash" style="background:${p.type==='static' ? washStatic(0.14 + i*0.03).replace('160deg','200deg') : washMotion(0.18 + i*0.03).replace('160deg','200deg')}"></div>
-      </div>
-    `).join('');
+      </div>`).join('')}</div>`;
+    }
 
     const currentIndex = PROJECTS.findIndex(x => x.slug === p.slug);
     const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length];
@@ -1292,7 +1370,7 @@
         </div>
       </div>
       <div class="project-gallery reveal">
-        ${galleryItems}
+        ${galleryHtml}
       </div>
       <div class="project-next reveal" data-nav="project" data-slug="${nextProject.slug}" tabindex="0" role="link" aria-label="Vai al progetto ${nextProject.title}">
         <div>
@@ -1450,17 +1528,11 @@
 
   // =========================================================
   // LAVORI RECENTI — scorrimento con filtro Graphic design / Motion
-  // Per usare le tue immagini: scrivi il percorso in `img`, per esempio img:'img/new-aura.jpg'
+  // Le schede si leggono dall'elenco PROJECTS qui sopra (campo cover)
   // =========================================================
   (function(){
-    const WORK = [
-      { slug:'Ottica-Nuzzi',       t:'Ottica-Nuzzi',       c:'Brand identity', type:'static', y:'2025', img:'' },
-      { slug:'universal-music-italia', t:'Universal Music Italia', c:'Motion graphics',                    type:'motion', y:'2022', img:'' },
-      { slug:'mozzarella-in-masseria', t:'Mozzarella in Masseria', c:'Rebranding',                         type:'static', y:'2023', img:'' },
-      { slug:'masseria-semeraro',      t:'Masseria Semeraro',      c:'Contenuti sportivi — basket',        type:'motion', y:'2024', img:'' },
-      { slug:'ottica-nuzzi',           t:'Ottica Nuzzi',           c:'Grafica & social',                   type:'static', y:'2024', img:'' },
-      { slug:'a-tutta-puglia',         t:'A Tutta Puglia',         c:'Progetto personale',                 type:'motion', y:'2026', img:'' }
-    ];
+    // le schede derivano dall'elenco PROJECTS: non c'è nulla da duplicare qui
+    const WORK = PROJECTS.map(p => ({ slug:p.slug, t:p.title, c:p.sub || p.client, type:p.type, y:String(p.year).slice(0,4), img:p.cover || '' }));
     const LABEL = { static:'Graphic design', motion:'Motion' };
 
     // segnaposto grafici, usati finché non c'è un'immagine
@@ -1489,7 +1561,7 @@
       rail.innerHTML = list.map(({ p, i }, n) => `
         <article class="wk-slide enter" style="--n:${n}" data-slug="${p.slug}" tabindex="0" role="link" aria-label="Apri il progetto ${p.t}">
           <div class="wk-thumb">
-            ${p.img ? `<img src="${p.img}" alt="${p.t}" loading="lazy">` : placeholder(i, p.type === 'static' ? 'red' : 'black')}
+            ${placeholder(i, p.type === 'static' ? 'red' : 'black')}${p.img ? imgTag(p.img, p.t) : ''}
             ${p.type === 'motion' ? '<span class="wk-play" aria-hidden="true"></span>' : ''}
           </div>
           <div class="wk-cap">
