@@ -1253,7 +1253,7 @@
       slug: 'farmacia-lasalvia',
       sub: 'Restyling logo',
       cover: 'farm1',
-      video: 'farmacia.mp4',
+      video: '',
       images: ['farm1','farm2','farm3','farm4','farm5','farm6','farm7','farm8','farm9','farm10','farm11','farm12'],
       title: 'Farmacia Lasalvia',
       client: 'Farmacia Lasalvia',
@@ -1443,7 +1443,7 @@
         ${nextThumb}
         <div class="project-next-title">${nextProject.title}</div>
       </div>`;
-    return `<div class="split"><aside class="split-text">${hero}${overview}${body}</aside><div class="split-media">${media}${gallery}</div></div>${next}`;
+    return `<div class="split"><aside class="split-text">${hero}${overview}${body}</aside><div class="split-media">${(p.video && p.images && p.images.length) ? gallery + media : media + gallery}</div></div>${next}`;
   }
 
   // ---------- ROUTING ----------
