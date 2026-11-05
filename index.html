@@ -670,6 +670,16 @@
   .band{ background: var(--orange); color:#0a0a0a; transform: rotate(-2deg); margin: 0 -24px; padding: 16px 0; }
   .band.alt{ background: var(--blue); color: var(--text); transform: rotate(1.5deg); margin-top: -4px; }
   .band-track{ display:flex; width:max-content; animation: scroll-left 34s linear infinite; }
+  /* nastro a pillole */
+  .pills-wrap{ background:#e63312; padding:26px 0; overflow:hidden; display:flex; flex-direction:column; gap:12px; margin:36px 0; }
+  .pills-track{ display:flex; width:max-content; animation: scroll-left 30s linear infinite; }
+  .pills-track.rev{ animation-direction:reverse; }
+  .pill{ flex:none; margin:0 10px; padding:.3em 1.1em; border-radius:999px; font-family:'Inter',sans-serif; font-weight:800; letter-spacing:-.03em; font-size:clamp(26px,4.4vw,56px); white-space:nowrap; line-height:1.15; }
+  .pill.f{ background:#fff; color:#111; }
+  .pill.o{ border:3px solid #fff; color:#fff; }
+  .pill.k{ background:#111; color:#f1eee8; }
+  .pills-set{ display:flex; align-items:center; }
+
   .band.alt .band-track{ animation-direction: reverse; }
   .band-set{ display:flex; align-items:center; }
   .band-set span{
@@ -962,8 +972,9 @@
 </section>
 
 <!-- FASCE SCORREVOLI -->
-<div class="band-wrap" aria-hidden="true">
-  <div class="band"><div class="band-track" data-words="Motion|Grafica|Branding|Packaging"></div></div>
+<div class="pills-wrap" aria-hidden="true">
+  <div class="pills-row"><div class="pills-track" data-words="Motion|Grafica|Branding|Packaging" data-off="0"></div></div>
+  <div class="pills-row"><div class="pills-track rev" data-words="Motion|Grafica|Branding|Packaging" data-off="1"></div></div>
 </div>
 
 <!-- ABOUT -->
@@ -1580,6 +1591,12 @@
   })();
 
   // 2) Fasce scorrevoli: costruite da data-words
+  document.querySelectorAll('.pills-track').forEach(track=>{
+    const words = track.dataset.words.split('|'), off = +track.dataset.off || 0, kinds = ['f','o','k'];
+    const list = words.concat(words);
+    const set = list.map((w,i)=> `<span class="pill ${kinds[(i+off)%3]}">${w}</span>`).join('');
+    track.innerHTML = `<div class="pills-set">${set}</div><div class="pills-set">${set}</div>`;
+  });
   document.querySelectorAll('.band-track').forEach(track=>{
     const words = track.dataset.words.split('|');
     const star = '<svg viewBox="0 0 24 24"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/></svg>';
