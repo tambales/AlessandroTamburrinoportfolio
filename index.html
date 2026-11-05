@@ -576,7 +576,8 @@
   .split-text .project-body{ display:block; padding:0; max-width:none; border:0; }
   .split-text .project-body-block{ margin-bottom:22px; }
   .split-media{ padding-top:56px; display:flex; flex-direction:column; gap:12px; }
-  .split-media .project-media{ padding:0; max-width:none; }
+  .split-media .project-media{ padding:0; max-width:none; width:100%; margin:0; }
+  .split-media .project-gallery{ width:100%; margin:0; }
   .split-media .media-frame{ margin:0; }
   .split-media .project-gallery{ padding:0; max-width:none; }
   .split-media .gallery-masonry{ column-count:1; }
@@ -596,6 +597,7 @@
     .split-media{ padding-top:0; }
     .next-card{ margin:60px 24px 110px; }
   }
+  .video-stack{ display:flex; flex-direction:column; gap:12px; }
   .img-missing{ display:none !important; }
 
   /* immagine o video principale del progetto */
@@ -1269,7 +1271,7 @@
       slug: 'universal-music-italia',
       sub: 'Motion graphics',
       cover: '',
-      video: '',
+      videos: ['https://www.youtube.com/watch?v=C6sDLa9XO3U','https://www.youtube.com/watch?v=-gWOvJcaVjc','https://www.youtube.com/watch?v=oqAagkIOPDw','https://www.youtube.com/watch?v=PLuD3Q18cg4','https://www.youtube.com/watch?v=y2gldH7dGN0'],
       images: [],
       title: 'Universal Music Italia',
       client: 'Universal Music Italia',
@@ -1387,12 +1389,14 @@
     const washStatic = (a) => `linear-gradient(160deg, rgba(201,162,39,${a}), transparent 65%)`;
     const washMotion = (a) => `linear-gradient(160deg, rgba(74,116,106,${a}), transparent 65%)`;
 
-    const embed = p.video ? videoEmbed(p.video) : '';
+    // video: un link singolo (video:'...') oppure più link (videos:['...','...'])
+    const vids = (Array.isArray(p.videos) && p.videos.length ? p.videos : (p.video ? [p.video] : [])).filter(u => videoEmbed(u));
+    const videoBlocks = vids.map(u => /\.mp4(\?.*)?$/i.test(u)
+      ? `<div class="media-frame is-image"><video class="media-img" src="${u}" autoplay muted loop playsinline controls preload="metadata"></video></div>`
+      : `<div class="media-frame">${videoEmbed(u)}</div>`).join('');
     let mediaBlock;
-    if(embed && /\.mp4(\?.*)?$/i.test(p.video)){
-      mediaBlock = `<div class="media-frame is-image"><video class="media-img" src="${p.video}" autoplay muted loop playsinline controls preload="metadata"></video></div>`;
-    }else if(embed){
-      mediaBlock = `<div class="media-frame">${embed}</div>`;
+    if(vids.length){
+      mediaBlock = `<div class="video-stack">${videoBlocks}</div>`;
     }else if(p.cover){
       mediaBlock = `<div class="media-frame is-image">${imgTag(p.cover, p.title, 'media-img')}</div>`;
     }else{
@@ -1452,7 +1456,7 @@
         ${nextThumb}
         <div class="project-next-title">${nextProject.title}</div>
       </div>`;
-    return `<div class="split"><aside class="split-text">${hero}${overview}${body}</aside><div class="split-media">${(p.video && p.images && p.images.length) ? gallery + media : media + gallery}</div></div>${next}`;
+    return `<div class="split"><aside class="split-text">${hero}${overview}${body}</aside><div class="split-media">${(vids.length && p.images && p.images.length) ? gallery + media : media + gallery}</div></div>${next}`;
   }
 
   // ---------- ROUTING ----------
