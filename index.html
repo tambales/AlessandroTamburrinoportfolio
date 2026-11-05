@@ -584,10 +584,11 @@
   .next-card{ display:block; cursor:pointer; margin:90px 40px 120px; max-width:1400px; }
   @media (min-width:1480px){ .next-card{ margin-left:auto; margin-right:auto; } }
   .next-card .eyebrow{ margin-bottom:18px; }
-  .next-thumb{ position:relative; aspect-ratio:16/7; background:#111; overflow:hidden; }
-  .next-thumb img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .8s var(--ease); }
-  .next-card:hover .next-thumb img{ transform:scale(1.04); }
-  .next-ph{ position:absolute; inset:0; background:linear-gradient(135deg,#e63312,#111 80%); }
+  .next-thumb{ position:relative; height:clamp(240px,30vw,380px); background:#111; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .next-thumb img{ position:relative; height:72%; width:auto; aspect-ratio:4/5; object-fit:cover; display:block; transition:transform .8s var(--ease); }
+  .next-card:hover .next-thumb img{ transform:scale(1.06); }
+  .next-ph{ height:72%; aspect-ratio:4/5; background:linear-gradient(135deg,#e63312,#333 90%); }
+  .next-thumb:has(img:not(.img-missing)) .next-ph{ display:none; }
   .next-card .project-next-title{ margin-top:16px; }
   @media (max-width:860px){
     .split{ display:block; padding:0 24px; }
@@ -1059,7 +1060,7 @@
       <span>Universal Music Italia</span>
       <span>Master Group</span>
       <span>Confcommercio Taranto</span>
-      <span>New Aura Meeting</span>
+      <span>PS Barber</span>
       <span>Ottica Nuzzi</span>
       <span>Bar delle Poste</span>
       <span>Top Driver</span>
@@ -1068,7 +1069,7 @@
       <span>Universal Music Italia</span>
       <span>Master Group</span>
       <span>Confcommercio Taranto</span>
-      <span>New Aura Meeting</span>
+      <span>PS Barber</span>
       <span>Ottica Nuzzi</span>
       <span>Bar delle Poste</span>
       <span>Top Driver</span>
@@ -1232,19 +1233,19 @@
   //  Se conosci l'estensione scrivila ('img/1.png'): si carica più veloce.
   const PROJECTS = [
     {
-      slug: 'new-aura-meeting',
-      sub: 'Identità visiva — corporate events',
-      cover: '',
+      slug: 'ps-barber',
+      sub: 'Brand identity',
+      cover: 'PS1',
       video: '',
-      images: [],
-      title: 'New Aura Meeting',
-      client: 'New Aura Meeting — corporate events',
+      images: ['PS2','PS3','PS4','PS5','PS6','PS7','PS8','PS9','PS10','PS11','PS12'],
+      title: 'PS Barber',
+      client: 'PS Barber',
       type: 'static',
       year: '2025',
-      intro: "Un'identità visiva pensata per un'agenzia di eventi aziendali: doveva comunicare precisione e cura, senza scivolare nel linguaggio freddo del \"corporate\".",
-      goal: "Costruire un sistema visivo riconoscibile — logo, palette, tipografia — capace di reggere sia su un biglietto da visita che su un booth fieristico.",
-      approach: "Esplorazione di più direzioni tra monogramma e wordmark, lavorando su blu profondo e oro come coppia cromatica, fino ad arrivare a un simbolo adattabile a formati molto diversi tra loro.",
-      result: "Un logo flessibile, pensato per funzionare in digitale e in stampa, con linee guida chiare per l'uso su materiali diversi.",
+      intro: "Brand identity per una barberia: un'immagine riconoscibile, solida e curata, che parla sia a chi passa davanti al negozio sia a chi la scopre online.",
+      goal: "Dare a PS Barber un'identità visiva coerente — logo, colori, tipografia — capace di funzionare dall'insegna ai social.",
+      approach: "Lavoro su un simbolo semplice e leggibile, con una palette decisa e un sistema di applicazioni pensato per materiali diversi, dal biglietto da visita ai contenuti digitali.",
+      result: "Un'identità flessibile e facile da applicare, che rende il marchio riconoscibile in ogni contesto.",
       gallery: 3
     },
     {
