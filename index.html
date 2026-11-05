@@ -603,6 +603,7 @@
   .media-frame.is-image::after{ display:none; }
   .media-frame .media-img{ display:block; width:100%; height:auto; max-height:82vh; object-fit:contain; margin:0 auto; background:var(--surface); }
   .media-frame iframe, .media-frame video{ position:absolute; inset:0; width:100%; height:100%; border:0; background:#111; }
+  .media-frame.is-image video{ position:static; width:100%; height:auto; max-height:82vh; display:block; background:#111; }
   .gallery-item{ aspect-ratio: 4/3; position: relative; overflow: hidden; background: var(--bg); }
   .gallery-item .wash{ position: absolute; inset: 0; transition: transform 1s var(--ease); }
   .gallery-item:hover .wash{ transform: scale(1.08); }
@@ -1252,8 +1253,8 @@
       slug: 'farmacia-lasalvia',
       sub: 'Restyling logo',
       cover: 'farm1',
-      video: '',
-      images: ['farm2','farm3','farm4','farm5','farm6','farm7','farm8','farm9','farm10','farm11','farm12'],
+      video: 'farmacia.mp4',
+      images: ['farm1','farm2','farm3','farm4','farm5','farm6','farm7','farm8','farm9','farm10','farm11','farm12'],
       title: 'Farmacia Lasalvia',
       client: 'Farmacia Lasalvia',
       type: 'static',
@@ -1379,7 +1380,9 @@
 
     const embed = p.video ? videoEmbed(p.video) : '';
     let mediaBlock;
-    if(embed){
+    if(embed && /\.mp4(\?.*)?$/i.test(p.video)){
+      mediaBlock = `<div class="media-frame is-image"><video class="media-img" src="${p.video}" autoplay muted loop playsinline controls preload="metadata"></video></div>`;
+    }else if(embed){
       mediaBlock = `<div class="media-frame">${embed}</div>`;
     }else if(p.cover){
       mediaBlock = `<div class="media-frame is-image">${imgTag(p.cover, p.title, 'media-img')}</div>`;
