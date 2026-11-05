@@ -1350,17 +1350,26 @@
   // ---------- IMMAGINI E VIDEO ----------
   const IMG_EXTS = ['jpg','jpeg','png','webp','JPG','JPEG','PNG','WEBP'];
   function imgTag(src, alt, cls){
-    const hasExt = /\.[A-Za-z0-9]{3,4}$/.test(src);
-    const first = hasExt ? src : src + '.' + IMG_EXTS[0];
-    return `<img ${cls ? `class="${cls}" ` : ''}src="${first}" data-base="${hasExt ? '' : src}" data-try="0" alt="${String(alt).replace(/"/g,'&quot;')}" loading="lazy" onerror="imgFallback(this)">`;
+    const m = src.match(/^(.*)\.([A-Za-z0-9]{3,4})$/);
+    const base = m ? m[1] : src;
+    const first = m ? src : src + '.' + IMG_EXTS[0];
+    return `<img ${cls ? `class="${cls}" ` : ''}src="${first}" data-base="${base}" data-try="0" alt="${String(alt).replace(/"/g,'&quot;')}" loading="lazy" onerror="imgFallback(this)">`;
+  }
+  // se il file non si trova prova: radice e cartella img, nome minuscolo / Maiuscola / MAIUSCOLO, tutte le estensioni
+  function imgCandidates(base){
+    const cap = base.charAt(0).toUpperCase() + base.slice(1);
+    const names = [...new Set([base, cap, base.toUpperCase(), base.toLowerCase()])];
+    const out = [];
+    names.forEach(n => ['', 'img/'].forEach(d => IMG_EXTS.forEach(e => out.push(d + n + '.' + e))));
+    return out;
   }
   function imgFallback(el){
     const base = el.dataset.base;
-    const t = (+el.dataset.try) + 1;
-    const n = IMG_EXTS.length;
-    if(!base || t >= n*2){ el.onerror = null; el.classList.add('img-missing'); return; }
-    el.dataset.try = t;
-    el.src = (t < n ? '' : 'img/') + base + '.' + IMG_EXTS[t % n];
+    if(!base){ el.onerror = null; el.classList.add('img-missing'); return; }
+    if(!el._c){ el._c = imgCandidates(base).filter(u => !el.src.endsWith('/' + u) && u !== el.getAttribute('src')); }
+    const next = el._c.shift();
+    if(!next){ el.onerror = null; el.classList.add('img-missing'); return; }
+    el.src = next;
   }
   function videoEmbed(url){
     if(/\.mp4(\?.*)?$/i.test(url)) return `<video src="${url}" controls playsinline preload="metadata"></video>`;
