@@ -585,10 +585,10 @@
   .next-card{ display:block; cursor:pointer; margin:90px 40px 120px; max-width:1400px; }
   @media (min-width:1480px){ .next-card{ margin-left:auto; margin-right:auto; } }
   .next-card .eyebrow{ margin-bottom:18px; }
-  .next-thumb{ position:relative; height:clamp(240px,30vw,380px); background:#111; overflow:hidden; display:flex; align-items:center; justify-content:center; }
-  .next-thumb img{ position:relative; height:72%; width:auto; aspect-ratio:4/5; object-fit:cover; display:block; transition:transform .8s var(--ease); }
-  .next-card:hover .next-thumb img{ transform:scale(1.06); }
-  .next-ph{ height:72%; aspect-ratio:4/5; background:linear-gradient(135deg,#e63312,#333 90%); }
+  .next-thumb{ position:relative; height:clamp(150px,17vw,250px); background:#111; overflow:hidden; }
+  .next-thumb img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; transition:transform .8s var(--ease); }
+  .next-card:hover .next-thumb img{ transform:scale(1.04); }
+  .next-ph{ position:absolute; inset:0; background:linear-gradient(135deg,#e63312,#333 90%); }
   .next-thumb:has(img:not(.img-missing)) .next-ph{ display:none; }
   .next-card .project-next-title{ margin-top:16px; }
   @media (max-width:860px){
