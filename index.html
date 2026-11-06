@@ -605,7 +605,7 @@
   .media-frame.is-image::after{ display:none; }
   .media-frame .media-img{ display:block; width:100%; height:auto; max-height:82vh; object-fit:contain; margin:0 auto; background:var(--surface); }
   .media-frame iframe, .media-frame video{ position:absolute; inset:0; width:100%; height:100%; border:0; background:#111; }
-  .media-frame.is-image video{ position:static; width:100%; height:auto; max-height:82vh; display:block; background:#111; }
+  .media-frame.is-image video{ position:static; width:auto; max-width:100%; height:auto; max-height:82vh; display:block; margin:0 auto; background:#111; }
   .gallery-item{ aspect-ratio: 4/3; position: relative; overflow: hidden; background: var(--bg); }
   .gallery-item .wash{ position: absolute; inset: 0; transition: transform 1s var(--ease); }
   .gallery-item:hover .wash{ transform: scale(1.08); }
@@ -1309,13 +1309,13 @@
       gallery: 3
     },
     {
-      slug: 'masseria-semeraro',
-      sub: 'Contenuti sportivi — basket',
+      slug: 'new-sporting-mottola',
+      sub: 'Social media contents',
       cover: '',
-      video: '',
+      video: 'img/Newsporting.mp4',
       images: [],
-      title: 'Masseria Semeraro',
-      client: 'Masseria Semeraro — basket',
+      title: 'New Sporting Mottola',
+      client: 'New Sporting Mottola — basket',
       type: 'motion',
       year: '2024 — in corso',
       intro: "Gestione dei contenuti social per una squadra di basket pugliese: recap partite, preview e momenti salienti della stagione.",
@@ -1420,6 +1420,8 @@
     let galleryHtml;
     if(p.images && p.images.length){
       galleryHtml = `<div class="gallery-masonry">${p.images.map((src, i) => imgTag(src, p.title + ' — immagine ' + (i + 1))).join('')}</div>`;
+    }else if(vids.length){
+      galleryHtml = '';
     }else{
       galleryHtml = `<div class="gallery-grid">${Array.from({ length: p.gallery || 3 }).map((_, i) => `
       <div class="gallery-item">
