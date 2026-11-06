@@ -988,7 +988,7 @@
         <p>Vivo e lavoro in Puglia, e da qui nasce anche <strong>A Tutta Puglia</strong>, un mio progetto personale che unisce identità visiva e territorio.</p>
       </div>
       <div class="stat-list reveal">
-        <div class="stat-row"><span class="stat-label">Esperienza</span><span class="stat-value">7–10 anni</span></div>
+        <div class="stat-row"><span class="stat-label">Caffè bevuti</span><span class="stat-value" id="coffeeCount" data-target="100">+100</span></div>
         <div class="stat-row"><span class="stat-label">Ambiti</span><span class="stat-value">Graphic + Motion</span></div>
         <div class="stat-row"><span class="stat-label">Base</span><span class="stat-value">Puglia, IT</span></div>
         <div class="stat-row"><span class="stat-label">Setup</span><span class="stat-value">Freelance, P.IVA</span></div>
@@ -1720,6 +1720,26 @@
       render(ch.dataset.f);
     }));
     render('all');
+  })();
+
+  // contatore "Caffè bevuti": sale da 0 a 100 quando arriva in vista
+  (function(){
+    const el = document.getElementById('coffeeCount'); if(!el) return;
+    const target = +el.dataset.target || 100;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduced || !('IntersectionObserver' in window)){ el.textContent = '+' + target; return; }
+    el.textContent = '+0';
+    let done = false;
+    new IntersectionObserver((entries, ob)=>{
+      if(done || !entries[0].isIntersecting) return;
+      done = true; ob.disconnect();
+      const t0 = performance.now(), dur = 2200;
+      (function tick(now){
+        const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+        el.textContent = '+' + Math.round(target * e);
+        if(p < 1) requestAnimationFrame(tick);
+      })(t0);
+    }, {threshold:.6}).observe(el);
   })();
 </script>
 
