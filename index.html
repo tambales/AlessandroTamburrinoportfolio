@@ -975,6 +975,13 @@
   html[data-theme="dark"] .pill.k{ background:#0e0e0e; color:#f1eee8; }
   html[data-theme="dark"] ::selection{ background:#e63312; color:#fff; }
   @media (max-width:860px){ .nav-right{gap:0} .rec-tag{ top:74px !important; right:24px; } .theme-toggle{ width:34px; height:34px; } }
+
+  .wip-banner{ position:absolute; top:0; left:0; right:0; z-index:5; display:flex; align-items:center; justify-content:center; gap:10px; min-height:34px; padding:6px 16px; background:#e63312; color:#fff; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; text-align:center; line-height:1.3; }
+  .wip-dot{ width:7px; height:7px; border-radius:50%; background:#fff; flex:none; animation:wipblink 1.4s ease-in-out infinite; }
+  @keyframes wipblink{ 50%{ opacity:.25 } }
+  body:has(#page-home:not([style*="none"])) header.site-nav:not(.scrolled){ top:34px; }
+  .hero .rec-tag{ margin-top:34px; }
+  @media (max-width:860px){ .wip-banner{ font-size:10px; } }
 </style>
 <script>
 (function(){
@@ -1008,6 +1015,7 @@
 
 <!-- HERO -->
 <section class="hero">
+  <div class="wip-banner" role="note"><span class="wip-dot"></span>Sito in restyling — sto ancora inserendo i lavori che ho creato.</div>
   <div class="hero-iris"></div>
   <div class="hero-shape orange"></div>
   <div class="hero-shape blue"></div>
