@@ -599,7 +599,7 @@
     .split-media{ padding-top:0; }
     .next-card{ margin:60px 24px 110px; }
   }
-  .video-stack{ display:flex; flex-direction:column; gap:12px; }
+  .video-stack{ display:flex; flex-direction:column; gap:48px; }
   .img-missing{ display:none !important; }
 
   /* immagine o video principale del progetto */
@@ -607,6 +607,9 @@
   .media-frame.is-image::after{ display:none; }
   .media-frame .media-img{ display:block; width:100%; height:auto; max-height:82vh; object-fit:contain; margin:0 auto; background:var(--surface); }
   .media-frame iframe, .media-frame video{ position:absolute; inset:0; width:100%; height:100%; border:0; background:#111; }
+  .vid-cap{ display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; padding:0 0 12px; border-bottom:2px solid var(--line-strong); margin-bottom:12px; }
+  .vid-cap h4{ font-weight:800; letter-spacing:-.04em; line-height:1; font-size:clamp(20px,2vw,28px); }
+  .vid-cap .mono{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted-dim); white-space:nowrap; }
   .media-frame.is-image video{ position:static; width:auto; max-width:100%; height:auto; max-height:82vh; display:block; margin:0 auto; background:#111; }
   .gallery-item{ aspect-ratio: 4/3; position: relative; overflow: hidden; background: var(--bg); }
   .gallery-item .wash{ position: absolute; inset: 0; transition: transform 1s var(--ease); }
@@ -1353,7 +1356,13 @@
       slug: 'universal-music-italia',
       sub: 'Motion graphics',
       cover: '',
-      videos: ['https://www.youtube.com/watch?v=C6sDLa9XO3U','https://www.youtube.com/watch?v=-gWOvJcaVjc','https://www.youtube.com/watch?v=oqAagkIOPDw','https://www.youtube.com/watch?v=PLuD3Q18cg4','https://www.youtube.com/watch?v=y2gldH7dGN0'],
+      videos: [
+        { src:'https://www.youtube.com/watch?v=C6sDLa9XO3U', title:'', year:'2022', kind:'Motion graphics' },
+        { src:'https://www.youtube.com/watch?v=-gWOvJcaVjc', title:'', year:'2022', kind:'Motion graphics' },
+        { src:'https://www.youtube.com/watch?v=oqAagkIOPDw', title:'', year:'2022', kind:'Motion graphics' },
+        { src:'https://www.youtube.com/watch?v=PLuD3Q18cg4', title:'', year:'2022', kind:'Motion graphics' },
+        { src:'https://www.youtube.com/watch?v=y2gldH7dGN0', title:'', year:'2022', kind:'Motion graphics' }
+      ],
       images: [],
       title: 'Universal Music Italia',
       client: 'Universal Music Italia',
@@ -1385,7 +1394,7 @@
       slug: 'new-sporting-mottola',
       sub: 'Social media contents',
       cover: 'img/592097363_1377427487410231_1881665225876647045_n.jpg',
-      video: 'img/Newsporting.mp4',
+      videos: [{ src:'img/Newsporting.mp4', title:'New Sporting Mottola', year:'2024', kind:'Contenuti social' }],
       images: ['img/592097363_1377427487410231_1881665225876647045_n.jpg','img/599927539_1384662050020108_5520116695345828633_n.jpg','img/863598585_1655414099611567_5858718029170674629_n.jpg','img/865391843_1655322469620730_6259190917269033851_n.jpg'],
       title: 'New Sporting Mottola',
       client: 'New Sporting Mottola — basket',
@@ -1433,7 +1442,7 @@
       slug: 'contenuti-social-media',
       sub: 'Contenuti per i social media',
       cover: 'img/aqp-cover.jpg',
-      videos: ['img/aqp.mp4'],
+      videos: [{ src:'img/aqp.mp4', title:'AQP Facile — Acquedotto Pugliese', year:'', kind:'Spot animato' }],
       images: [],
       title: 'Contenuti per i social media',
       client: 'Acquedotto Pugliese — AQP Facile',
@@ -1449,7 +1458,7 @@
       slug: 'logo-animation',
       sub: 'Logo animation',
       cover: 'img/covella-cover.jpg',
-      videos: ['img/Covella.mp4','img/pizzeria-ok.mp4'],
+      videos: [{ src:'img/Covella.mp4', title:'Covella Pasticceri', year:'', kind:'Logo animation' }, { src:'img/pizzeria-ok.mp4', title:'Pizzeria Ok', year:'', kind:'Logo animation' }],
       images: [],
       title: 'Logo Animation',
       client: 'Covella Pasticceri, Pizzeria Ok',
@@ -1504,10 +1513,16 @@
     const washMotion = (a) => `linear-gradient(160deg, rgba(74,116,106,${a}), transparent 65%)`;
 
     // video: un link singolo (video:'...') oppure più link (videos:['...','...'])
-    const vids = (Array.isArray(p.videos) && p.videos.length ? p.videos : (p.video ? [p.video] : [])).filter(u => videoEmbed(u));
-    const videoBlocks = vids.map(u => /\.mp4(\?.*)?$/i.test(u)
-      ? `<div class="media-frame is-image"><video class="media-img" src="${u}" autoplay muted loop playsinline controls preload="metadata"></video></div>`
-      : `<div class="media-frame">${videoEmbed(u)}</div>`).join('');
+    // ogni video può essere un link ('...') o un oggetto { src, title, year, kind } con didascalia sopra
+    const vids = (Array.isArray(p.videos) && p.videos.length ? p.videos : (p.video ? [p.video] : []))
+      .map(v => typeof v === 'string' ? { src: v } : v).filter(v => v && videoEmbed(v.src));
+    const vidCap = v => {
+      const meta = [v.year, v.kind].filter(Boolean).join(' · ');
+      return (v.title || meta) ? `<div class="vid-cap">${v.title ? `<h4>${v.title}</h4>` : ''}${meta ? `<span class="mono">${meta}</span>` : ''}</div>` : '';
+    };
+    const videoBlocks = vids.map(v => `<div class="vid-item">${vidCap(v)}${/\.mp4(\?.*)?$/i.test(v.src)
+      ? `<div class="media-frame is-image"><video class="media-img" src="${v.src}" autoplay muted loop playsinline controls preload="metadata"></video></div>`
+      : `<div class="media-frame">${videoEmbed(v.src)}</div>`}</div>`).join('');
     let mediaBlock;
     if(vids.length){
       mediaBlock = `<div class="video-stack">${videoBlocks}</div>`;
