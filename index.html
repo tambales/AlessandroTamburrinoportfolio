@@ -1428,6 +1428,38 @@
       approach: "Ho progettato etichetta o packaging in base al prodotto, poi i mockup realistici e i visual con gli ingredienti per presentarli online.",
       result: "Una linea di prodotti coerente, con pack pronti per la stampa e immagini pronte per e-commerce e social.",
       gallery: 3
+    },
+    {
+      slug: 'contenuti-social-media',
+      sub: 'Contenuti per i social media',
+      cover: 'img/aqp-cover.jpg',
+      videos: ['img/aqp.mp4'],
+      images: [],
+      title: 'Contenuti per i social media',
+      client: 'Acquedotto Pugliese — AQP Facile',
+      type: 'motion',
+      year: '',
+      intro: "Video e animazioni pensati per i social: spot, tutorial e contenuti brevi che spiegano un servizio o un prodotto in pochi secondi.",
+      goal: "Far capire subito il messaggio, anche a chi scorre il feed senza audio.",
+      approach: "Grafiche animate, testi chiari a schermo e un montaggio con il ritmo giusto per ogni formato.",
+      result: "Contenuti pronti per Instagram, Facebook e YouTube, coerenti con l'identità del brand.",
+      gallery: 3
+    },
+    {
+      slug: 'logo-animation',
+      sub: 'Logo animation',
+      cover: 'img/covella-cover.jpg',
+      videos: ['img/Covella.mp4'],
+      images: [],
+      title: 'Logo Animation',
+      client: 'Covella Pasticceri',
+      type: 'motion',
+      year: '',
+      intro: "Animazioni di logo per aperture video, reel e spot: pochi secondi per presentare il marchio.",
+      goal: "Dare al logo un movimento che rispecchi il carattere del brand.",
+      approach: "Si parte dalla forma del logo e si costruisce l'animazione sui suoi elementi, con tempi brevi e un finale pulito.",
+      result: "Un'apertura riconoscibile da usare su social, video e presentazioni.",
+      gallery: 3
     }
   ];
 
@@ -1519,7 +1551,7 @@
         <p class="ov-text">${p.intro}</p>
         <div class="ov-rows">
           <div class="ov-row"><span>Cliente</span><span>${p.client}</span></div>
-          <div class="ov-row"><span>Data</span><span>${p.year}</span></div>
+          ${p.year ? `<div class="ov-row"><span>Data</span><span>${p.year}</span></div>` : ''}
           <div class="ov-row"><span>Servizi</span><span>${p.sub || typeLabel}</span></div>
         </div>
       </div>`;
@@ -1750,7 +1782,7 @@
           </div>
           <div class="wk-cap">
             <h3>${p.t}</h3>
-            <span class="wk-tag mono">${LABEL[p.type]} · ${p.y}</span>
+            <span class="wk-tag mono">${LABEL[p.type]}${p.y ? ' · ' + p.y : ''}</span>
             <span class="wk-sub">${p.c}</span>
           </div>
         </article>`).join('');
