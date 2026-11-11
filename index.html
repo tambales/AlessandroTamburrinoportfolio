@@ -1398,7 +1398,7 @@
       images: ['img/592097363_1377427487410231_1881665225876647045_n.jpg','img/599927539_1384662050020108_5520116695345828633_n.jpg','img/863598585_1655414099611567_5858718029170674629_n.jpg','img/865391843_1655322469620730_6259190917269033851_n.jpg'],
       title: 'New Sporting Mottola',
       client: 'New Sporting Mottola — basket',
-      type: 'motion',
+      type: 'static',
       year: '2024 — in corso',
       intro: "Gestione dei contenuti social per una squadra di basket pugliese: recap partite, preview e momenti salienti della stagione.",
       goal: "Raccontare la stagione sportiva con contenuti che trasmettano l'energia reale della partita.",
@@ -1508,7 +1508,8 @@
   // ---------- PROJECT PAGE RENDERING ----------
   let projLayout = 'split';
   function renderProject(p){
-    const typeLabel = p.type === 'static' ? 'GRAPHIC DESIGN' : 'MOTION';
+    // type: 'static' (Graphic design), 'motion' oppure 'both' (compare in entrambi i filtri)
+    const typeLabel = { static:'GRAPHIC DESIGN', motion:'MOTION', both:'GRAPHIC DESIGN · MOTION' }[p.type] || 'MOTION';
     const washStatic = (a) => `linear-gradient(160deg, rgba(201,162,39,${a}), transparent 65%)`;
     const washMotion = (a) => `linear-gradient(160deg, rgba(74,116,106,${a}), transparent 65%)`;
 
@@ -1556,7 +1557,7 @@
       <div class="project-hero">
         <div class="project-back" data-nav="home" tabindex="0" role="link" aria-label="Torna al portfolio"><span class="arrow">→</span> Torna al portfolio</div>
         <div class="project-tagrow reveal">
-          <span class="project-tag ${p.type}">${typeLabel}</span>
+          <span class="project-tag ${p.type === 'both' ? 'static' : p.type}">${typeLabel}</span>
         </div>
         <h1 class="project-title reveal">${p.title}</h1>
       </div>`;
@@ -1764,7 +1765,8 @@
   (function(){
     // le schede derivano dall'elenco PROJECTS: non c'è nulla da duplicare qui
     const WORK = PROJECTS.map(p => ({ slug:p.slug, t:p.title, c:p.sub || p.client, type:p.type, y:String(p.year).slice(0,4), img:p.cover || '' }));
-    const LABEL = { static:'Graphic design', motion:'Motion' };
+    const LABEL = { static:'Graphic design', motion:'Motion', both:'Graphic · Motion' };
+    const inCat = (p, f) => p.type === f || p.type === 'both';
 
     // segnaposto grafici, usati finché non c'è un'immagine
     const TH = { red:{bg:'#e63312',fg:'#111111',ac:'#f1eee8'}, black:{bg:'#111111',fg:'#f1eee8',ac:'#e63312'} };
@@ -1788,12 +1790,12 @@
     let slides = [];
 
     function render(filter){
-      const list = WORK.map((p, i) => ({ p, i })).filter(({ p }) => filter === 'all' || p.type === filter);
+      const list = WORK.map((p, i) => ({ p, i })).filter(({ p }) => filter === 'all' || inCat(p, filter));
       rail.innerHTML = list.map(({ p, i }, n) => `
         <article class="wk-slide enter" style="--n:${n}" data-slug="${p.slug}" tabindex="0" role="link" aria-label="Apri il progetto ${p.t}">
           <div class="wk-thumb">
             ${placeholder(i, p.type === 'static' ? 'red' : 'black')}${p.img ? imgTag(p.img, p.t) : ''}
-            ${p.type === 'motion' ? '<span class="wk-play" aria-hidden="true"></span>' : ''}
+            ${inCat(p, 'motion') ? '<span class="wk-play" aria-hidden="true"></span>' : ''}
           </div>
           <div class="wk-cap">
             <h3>${p.t}</h3>
@@ -1832,10 +1834,9 @@
     });
     window.addEventListener('resize', update);
 
-    const nStatic = WORK.filter(p => p.type === 'static').length;
     document.getElementById('wk-n-all').textContent = WORK.length;
-    document.getElementById('wk-n-static').textContent = nStatic;
-    document.getElementById('wk-n-motion').textContent = WORK.length - nStatic;
+    document.getElementById('wk-n-static').textContent = WORK.filter(p => inCat(p, 'static')).length;
+    document.getElementById('wk-n-motion').textContent = WORK.filter(p => inCat(p, 'motion')).length;
     document.querySelectorAll('.wk-chip').forEach(ch => ch.addEventListener('click', () => {
       document.querySelectorAll('.wk-chip').forEach(c => c.setAttribute('aria-pressed', String(c === ch)));
       render(ch.dataset.f);
