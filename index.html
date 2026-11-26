@@ -171,6 +171,9 @@
   }
   #timecode{ font-variant-numeric: tabular-nums; color: var(--muted); }
 
+  /* scia di forme dietro al testo (cursore + percorso automatico) */
+  .hero-trail{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .hero-eyebrow, .hero-title, .hero-role, .hero-rotator, .hero-tagline{ position:relative; z-index:1; }
   .hero-eyebrow{ margin-bottom: 28px; }
 
   .hero-title{
@@ -1023,6 +1026,7 @@
   <div class="hero-iris"></div>
   <div class="hero-shape orange"></div>
   <div class="hero-shape blue"></div>
+  <canvas class="hero-trail" aria-hidden="true"></canvas>
   <div class="rec-tag"><span class="rec-dot"></span> REC <span id="timecode">00:00:00:00</span></div>
 
   <div class="hero-eyebrow eyebrow">Based in Puglia</div>
@@ -1748,6 +1752,144 @@
     a.addEventListener('focus', ()=> scramble(a));
   });
 
+
+  // =========================================================
+  // HERO — SHAPE TRAIL: il cursore lascia forme che nascono, scivolano e svaniscono.
+  // Se il mouse è fermo (o su touch) un percorso automatico disegna accanto al nome.
+  // =========================================================
+  (function(){
+    const hero = document.querySelector('.hero');
+    const cv = hero && hero.querySelector('.hero-trail');
+    if(!cv || !cv.getContext) return;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){ cv.remove(); return; }
+    const ctx = cv.getContext('2d');
+    const RED = '#e63312';
+    const ink = () => document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1eee8' : '#111111';
+    const KINDS = ['circle','square','triangle','ring','plus','half','bar'];
+    let W = 0, H = 0, dpr = 1;
+    const shapes = [];
+    const MAX = 140;
+
+    function resize(){
+      const r = hero.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = r.width; H = r.height;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function spawn(x, y, vx, vy){
+      const sp = Math.hypot(vx, vy);
+      const size = (14 + Math.random() * 30 + Math.min(sp, 40) * 0.5) * (W > 860 ? 1 : 0.65);
+      shapes.push({
+        x, y,
+        vx: vx * 0.28 + (Math.random() - .5) * 2.2,
+        vy: vy * 0.28 + (Math.random() - .5) * 2.2 - 0.4,
+        rot: Math.random() * Math.PI * 2,
+        vr: (Math.random() - .5) * 0.12,
+        size,
+        kind: KINDS[(Math.random() * KINDS.length) | 0],
+        red: Math.random() < 0.55,
+        t: 0,
+        life: 1100 + Math.random() * 900
+      });
+      if(shapes.length > MAX) shapes.splice(0, shapes.length - MAX);
+    }
+
+    // ingresso con rimbalzo, uscita che si restringe
+    const backOut = t => { const c = 2.2; t -= 1; return 1 + (c + 1) * t * t * t + c * t * t; };
+
+    function draw(s, k, a){
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.rot);
+      const r = s.size * k / 2;
+      const col = s.red ? RED : ink();
+      ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = Math.max(2, s.size * 0.09);
+      ctx.beginPath();
+      switch(s.kind){
+        case 'circle': ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill(); break;
+        case 'square': ctx.rect(-r, -r, r * 2, r * 2); ctx.fill(); break;
+        case 'triangle': ctx.moveTo(0, -r); ctx.lineTo(r * .95, r * .8); ctx.lineTo(-r * .95, r * .8); ctx.closePath(); ctx.fill(); break;
+        case 'ring': ctx.arc(0, 0, r * .85, 0, Math.PI * 2); ctx.stroke(); break;
+        case 'plus': { const w = r * .32; ctx.rect(-r, -w, r * 2, w * 2); ctx.rect(-w, -r, w * 2, r * 2); ctx.fill(); break; }
+        case 'half': ctx.arc(0, 0, r, Math.PI, 0); ctx.closePath(); ctx.fill(); break;
+        case 'bar': ctx.rect(-r * 1.3, -r * .22, r * 2.6, r * .44); ctx.fill(); break;
+      }
+      ctx.restore();
+    }
+
+    // puntatore reale
+    let px = null, py = null, lastMove = -1e9, acc = 0;
+    function feed(x, y){
+      if(px === null){ px = x; py = y; return; }
+      const dx = x - px, dy = y - py, d = Math.hypot(dx, dy);
+      acc += d;
+      const STEP = 26;
+      while(acc >= STEP){
+        acc -= STEP;
+        const f = 1 - acc / (d || 1);
+        spawn(px + dx * f, py + dy * f, dx, dy);
+      }
+      px = x; py = y;
+    }
+    hero.addEventListener('pointermove', e => {
+      if(e.pointerType === 'touch') return;
+      const r = hero.getBoundingClientRect();
+      lastMove = performance.now();
+      feed(e.clientX - r.left, e.clientY - r.top);
+    });
+    hero.addEventListener('pointerleave', () => { px = null; });
+
+    // percorso automatico nella zona accanto al nome
+    let auto = { on: false, x: 0, y: 0, a: 0, acc: 0 };
+    function autopilot(now, dt){
+      const wide = W > 860;
+      const cx = wide ? W * 0.7 : W * 0.6;
+      const cy = wide ? H * 0.58 : H * 0.17;
+      const rx = wide ? W * 0.17 : W * 0.28;
+      const ry = wide ? H * 0.16 : H * 0.055;
+      auto.a += dt * 0.0011;
+      const x = cx + Math.sin(auto.a * 1.3) * rx + Math.sin(auto.a * 3.1) * rx * 0.18;
+      const y = cy + Math.sin(auto.a * 2.0 + 0.6) * ry;
+      if(!auto.on){ auto.on = true; auto.x = x; auto.y = y; return; }
+      const dx = x - auto.x, dy = y - auto.y, d = Math.hypot(dx, dy);
+      auto.acc += d;
+      while(auto.acc >= 34){ auto.acc -= 34; spawn(x, y, dx * 3, dy * 3); }
+      auto.x = x; auto.y = y;
+    }
+
+    let visible = true, prev = performance.now();
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(hero);
+    }
+    function frame(now){
+      const dt = Math.min(48, now - prev); prev = now;
+      if(visible && !document.hidden){
+        if(now - lastMove > 1800) autopilot(now, dt); else auto.on = false;
+        ctx.clearRect(0, 0, W, H);
+        const f = Math.pow(0.94, dt / 16.67);
+        for(let i = shapes.length - 1; i >= 0; i--){
+          const s = shapes[i];
+          s.t += dt;
+          const p = s.t / s.life;
+          if(p >= 1){ shapes.splice(i, 1); continue; }
+          s.vx *= f; s.vy = s.vy * f + 0.018 * dt / 16.67;
+          s.x += s.vx * dt / 16.67; s.y += s.vy * dt / 16.67;
+          s.rot += s.vr * dt / 16.67;
+          const kin = Math.min(1, s.t / 420);
+          const k = p < 0.6 ? backOut(kin) : backOut(kin) * (1 - (p - 0.6) / 0.4);
+          const a = p < 0.6 ? 1 : 1 - (p - 0.6) / 0.4;
+          draw(s, k, a);
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
 
   // header: fondo solo dopo lo scroll
   (function(){
